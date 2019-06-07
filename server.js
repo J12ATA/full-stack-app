@@ -2,8 +2,6 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
-const runner = require('./test-runner');
-const { REACT_APP_PORT, REACT_APP_SKIP_TESTS } = process.env;
 
 const users = require("./routes/api/users");
 
@@ -35,21 +33,6 @@ require("./config/passport")(passport);
 // Routes
 app.use("/api/users", users);
 
-const port = REACT_APP_PORT || 5000;
+const port = process.env.PORT || 5000;
 
-app.listen(port, () => {
-  console.log(`Server up and running on port ${port} !`);
-  if(!REACT_APP_SKIP_TESTS) {
-    console.log('Running Tests...');
-    setTimeout(() => {
-      try {
-        runner.run();
-      } catch(error) {
-          console.log('Tests are not valid:');
-          console.log(error);
-      }
-    }, 1500);
-  }
-});
-
-module.exports = app; // for testing
+app.listen(port, () => console.log(`Server up and running on port ${port} !`));
