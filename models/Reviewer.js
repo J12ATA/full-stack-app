@@ -20,6 +20,10 @@ const ProductReviewSchema = new Schema({
   description: {
     type: String,
     required: true
+  },
+  approved: {
+    type: Boolean,
+    default: false
   }
 });
 
