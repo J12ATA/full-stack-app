@@ -8,12 +8,46 @@ const keys = require("../../config/keys");
 const validateAddAdminInput = require("../../validation/add_admin");
 const validateLoginInput = require("../../validation/login");
 const validateAddReviewerInput = require("../../validation/add_reviewer");
+const validateAddProductInput = require("../../validation/add_product");
 
 // Load Admin model
 const Admin = require("../../models/Admin");
 
 // Load Reviewer model
 const Reviewer = require("../../models/Reviewer");
+
+// Load Product model
+const Product = require("../../models/Product");
+
+// @route POST api/users/add_product
+// @desc AddProduct product
+// @acess Public
+router.post("/add_product", (req, res) => {
+  // Form validation
+  const { errors, isValid } = validateAddProductInput(req.body);
+
+  // Check validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Product.findOne({ name: req.body.name }).then(product => {
+    if (product) {
+      return res.status(400).json({ name: "Product already exists" });
+    }
+  });
+
+  const newProduct = new Product({
+    name: req.body.name,
+    description: req.body.description,
+    price: req.body.price
+  });
+
+  newProduct
+    .save()
+    .then(product => res.json(product))
+    .catch(err => console.log(err));
+});
 
 // @route POST api/users/add_admin
 // @desc AddAdmin admin
@@ -56,26 +90,26 @@ router.post("/add_admin", (req, res) => {
 // @desc AddReviewer reviewer
 // @access Public
 router.post("/add_reviewer", (req, res) => {
-    // Form validation
-    const { errors, isValid } = validateAddReviewerInput(req.body);
+  // Form validation
+  const { errors, isValid } = validateAddReviewerInput(req.body);
 
-    // Check validation
-    if (!isValid) {
-      return res.status(400).json(errors);
+  // Check validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Reviewer.findOne({ email: req.body.email }).then(reviewer => {
+    if (reviewer) {
+      return res.status(400).json({ email: "Email already exists" });
     }
-  
-    Reviewer.findOne({ email: req.body.email }).then(reviewer => {
-      if (reviewer) {
-        return res.status(400).json({ email: "Email already exists" });
-      }
-    });
+  });
 
-    const newReviewer = new Reviewer({
-      name: req.body.name,
-      email: req.body.email,
-      verified: req.body.verified,
-      password: req.body.password
-    });
+  const newReviewer = new Reviewer({
+    name: req.body.name,
+    email: req.body.email,
+    verified: req.body.verified,
+    password: req.body.password
+  });
 
   // Hash password before saving in database
   bcrypt.genSalt(10, (err, salt) => {
