@@ -21,6 +21,10 @@ const ProductReviewSchema = new Schema({
     type: String,
     required: true
   },
+  verified: {
+    type: Boolean,
+    required: true
+  },
   approved: {
     type: Boolean,
     default: false
