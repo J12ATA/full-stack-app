@@ -12,9 +12,16 @@ const ProductSchema = new Schema({
     required: true
   },
   price: {
-    type: Number,
-    min: 1,
+    type: String,
     required: true
+  },
+  rating: {
+    type: Number,
+    default: 0
+  },
+  reviews: {
+    type: Array,
+    default: []
   }
 });
 
