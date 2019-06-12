@@ -16,6 +16,10 @@ const ProductReviewSchema = new Schema({
     min: 1,
     max: 5,
     required: true
+  },
+  description: {
+    type: String,
+    required: true
   }
 });
 
