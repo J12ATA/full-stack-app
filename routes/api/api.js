@@ -20,7 +20,7 @@ const Reviewer = require("../../models/Reviewer");
 // Load Product model
 const Product = require("../../models/Product");
 
-// @route POST api/users/add_product_review
+// @route POST api/add_product_review
 // @desc AddProductReview review
 // @access Public
 router.post("/add_product_review", (req, res) => {
@@ -90,7 +90,7 @@ router.post("/add_product_review", (req, res) => {
   });
 });
 
-// @route POST api/users/add_product
+// @route POST api/add_product
 // @desc AddProduct product
 // @access Public
 router.post("/add_product", (req, res) => {
@@ -120,7 +120,7 @@ router.post("/add_product", (req, res) => {
     .catch(err => console.log(err));
 });
 
-// @route POST api/users/add_admin
+// @route POST api/add_admin
 // @desc AddAdmin admin
 // @access Public
 router.post("/add_admin", (req, res) => {
@@ -157,7 +157,7 @@ router.post("/add_admin", (req, res) => {
   });
 });
 
-// @route POST api/users/add_reviewer
+// @route POST api/add_reviewer
 // @desc AddReviewer reviewer
 // @access Public
 router.post("/add_reviewer", (req, res) => {
@@ -195,7 +195,7 @@ router.post("/add_reviewer", (req, res) => {
   });
 });
 
-// @route POST api/users/login_admin
+// @route POST api/login_admin
 // @desc LoginAdmin admin and return JWT token
 // @access Public
 router.post("/login_admin", (req, res) => {
@@ -250,7 +250,7 @@ router.post("/login_admin", (req, res) => {
   });
 });
 
-// @route POST api/users/login_reviewer
+// @route POST api/login_reviewer
 // @desc LoginReviewer reviewer and return JWT token
 // @access Public
 router.post("/login_reviewer", (req, res) => {

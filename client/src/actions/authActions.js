@@ -7,7 +7,7 @@ import { GET_ERRORS, SET_CURRENT_ADMIN, ADMIN_LOADING, REVIEWER_LOADING, SET_CUR
 // Register Admin
 export const addAdmin = (userData, history) => dispatch => {
   axios
-    .post("/api/users/add_admin", userData)
+    .post("/api/add_admin", userData)
     .then(res => history.push("/login_admin")) // re-direct to login on successful admin registration
     .catch(err =>
       dispatch({
@@ -20,7 +20,7 @@ export const addAdmin = (userData, history) => dispatch => {
 // AddReviewer
 export const addReviewer = (userData, history) => dispatch => {
   axios
-    .post("/api/users/add_reviewer", userData)
+    .post("/api/add_reviewer", userData)
     .then(res => history.push("/login_reviewer")) //re-direct to users on successful reviewer registration
     .catch(err =>
       dispatch({
@@ -33,7 +33,7 @@ export const addReviewer = (userData, history) => dispatch => {
 // Login - get admin token
 export const loginAdmin = userData => dispatch => {
   axios
-    .post("/api/users/login_admin", userData)
+    .post("/api/login_admin", userData)
     .then(res => {
       // Save to localStorage
 
@@ -58,7 +58,7 @@ export const loginAdmin = userData => dispatch => {
 // LoginReviewer - get reviewer token
 export const loginReviewer = userData => dispatch => {
   axios
-    .post("/api/users/login_reviewer", userData)
+    .post("/api/login_reviewer", userData)
     .then(res => {
       // Save to localStorage
 
