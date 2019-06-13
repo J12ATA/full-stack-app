@@ -2,23 +2,23 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const keys = require("../../config/keys");
+const keys = require("./config/keys");
 
 // Load input validation
-const validateAddAdminInput = require("../../validation/add_admin");
-const validateLoginInput = require("../../validation/login");
-const validateAddReviewerInput = require("../../validation/add_reviewer");
-const validateAddProductInput = require("../../validation/add_product");
-const validateAddProductReviewInput = require("../../validation/add_product_review");
+const validateAddAdminInput = require("./validation/add_admin");
+const validateLoginInput = require("./validation/login");
+const validateAddReviewerInput = require("./validation/add_reviewer");
+const validateAddProductInput = require("./validation/add_product");
+const validateAddProductReviewInput = require("./validation/add_product_review");
 
 // Load Admin model
-const Admin = require("../../models/Admin");
+const Admin = require("./models/Admin");
 
 // Load Reviewer model
-const Reviewer = require("../../models/Reviewer");
+const Reviewer = require("./models/Reviewer");
 
 // Load Product model
-const Product = require("../../models/Product");
+const Product = require("./models/Product");
 
 // @route POST api/add_product_review
 // @desc AddProductReview review
