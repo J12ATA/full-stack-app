@@ -35,71 +35,83 @@ router.post("/add_product_review", (req, res) => {
   Reviewer.findOne({ name: req.body.name }).then(reviewer => {
     if (!reviewer) {
       return res.status(400).json({ name: "Reviewer does not yet exist" });
-    } else {
-      Product.findOne({ name: req.body.product }).then(product => {
-        if (!product) {
-          return res
-            .status(400)
-            .json({ product: "Product does not yet exist" });
-        } else {
-          const dateString = new Date().toDateString();
+    } else if (reviewer.reviews.length !== 0) {
+      const regEx = new RegExp(`^${req.body.product}$`, "i");
 
-          product.reviews.push({
-            rating: req.body.rating,
-            date: dateString,
-            author: reviewer.name,
-            description: req.body.description,
-            verified: reviewer.verified,
-            approved: false
-          });
-
-          product.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-          let ratings = [];
-
-          product.reviews.map(review =>
-            ratings.push([Number(review.rating), Number(review.rating)])
-          );
-
-          const weightedMean = arr => {
-            let totalWeight = arr.reduce((acc, curr) => {
-              return acc + curr[1];
-            }, 0);
-
-            return arr.reduce((acc, curr) => {
-              return acc + (curr[0] * curr[1]) / totalWeight;
-            }, 0);
-          };
-
-          product.rating = weightedMean(ratings).toFixed(1);
-
-          product.save();
-
-          reviewer.reviews.push({
-            date: dateString,
-            product: product.name,
-            rating: req.body.rating,
-            description: req.body.description,
-            verified: reviewer.verified,
-            approved: false
-          });
-
-          reviewer.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-          reviewer
-            .save()
-            .then(reviewer =>
-              res.json({
-                date: reviewer.reviews[0].date,
-                product: reviewer.reviews[0].product,
-                rating: reviewer.reviews[0].rating,
-                description: reviewer.reviews[0].description,
-                approved: "Review is awaiting approval"
-              })
-            )
-            .catch(err => console.log(err));
-        }
+      let priorReview = reviewer.reviews.map(review => {
+        if (review.product.match(regEx)) return 1;
       });
+
+      if (priorReview.find(i => i === 1) !== undefined) {
+        return res.status(400).json({ error: "Max of one review per product" });
+      } else {
+        Product.findOne({ name: req.body.product }).then(product => {
+          if (!product) {
+            return res
+              .status(400)
+              .json({ product: "Product does not yet exist" });
+          } else {
+            const dateString = new Date().toDateString();
+
+            product.reviews.push({
+              rating: req.body.rating,
+              date: dateString,
+              author: reviewer.name,
+              description: req.body.description,
+              verified: reviewer.verified,
+              approved: false
+            });
+
+            product.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+            let ratings = [];
+
+            product.reviews.map(review =>
+              ratings.push([Number(review.rating), Number(review.rating)])
+            );
+
+            const weightedMean = arr => {
+              let totalWeight = arr.reduce((acc, curr) => {
+                return acc + curr[1];
+              }, 0);
+
+              return arr.reduce((acc, curr) => {
+                return acc + (curr[0] * curr[1]) / totalWeight;
+              }, 0);
+            };
+
+            product.rating = weightedMean(ratings).toFixed(1);
+
+            product.save();
+
+            reviewer.reviews.push({
+              date: dateString,
+              product: product.name,
+              rating: req.body.rating,
+              description: req.body.description,
+              verified: reviewer.verified,
+              approved: false
+            });
+
+            reviewer.reviews.sort(
+              (a, b) => new Date(b.date) - new Date(a.date)
+            );
+
+            reviewer
+              .save()
+              .then(reviewer =>
+                res.json({
+                  date: reviewer.reviews[0].date,
+                  product: reviewer.reviews[0].product,
+                  rating: reviewer.reviews[0].rating,
+                  description: reviewer.reviews[0].description,
+                  approved: "Review is awaiting approval"
+                })
+              )
+              .catch(err => console.log(err));
+          }
+        });
+      }
     }
   });
 });
