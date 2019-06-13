@@ -41,14 +41,18 @@ router.post("/add_product_review", (req, res) => {
         return res.status(400).json({ product: "Product does not yet exist" });
       }
 
+      const dateString = new Date().toDateString();
+
       product.reviews.push({
         rating: req.body.rating,
-        date: Date.now,
+        date: dateString,
         author: reviewer.name,
         description: req.body.description,
         verified: reviewer.verified,
         approved: false
       });
+
+      product.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       let ratings = [];
 
@@ -69,11 +73,14 @@ router.post("/add_product_review", (req, res) => {
 
       reviewer.reviews.push({
         author: reviewer.name,
+        date: dateString,
         product: product.name,
         rating: req.body.rating,
         description: req.body.description,
         verified: reviewer.verified
       });
+
+      reviewer.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       reviewer
         .save()
