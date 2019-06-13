@@ -444,4 +444,111 @@ router.get("/get_products", (req, res) => {
     .catch(err => console.log(err));
 });
 
+// @route PUT api/update_reviewer/:name
+router.put("/update_reviewer/:name", (req, res) => {
+  const { new_name, new_email, new_password, is_verified } = req.body;
+  Reviewer.findOne({ name: req.params.name })
+    .then(reviewer => {
+      if (!reviewer) {
+        return res
+          .status(400)
+          .json({ error: `${req.params.name} is not a registered reviewer` });
+      } else {
+        if (new_name) {
+          reviewer.name = new_name;
+          if (reviewer.reviews !== 0) {
+            Product.find({})
+              .then(products => {
+                products.map(product => {
+                  if (product.reviews.length !== 0) {
+                    product.reviews = product.reviews.map(review => {
+                      if (review.author === req.params.name) {
+                        return {
+                          rating: review.rating,
+                          date: review.date,
+                          author: new_name,
+                          description: review.description,
+                          verified: review.verified,
+                          approved: review.approved
+                        };
+                      } else {
+                        return review;
+                      }
+                    });
+                    product.save();
+                  }
+                });
+              })
+              .catch(err => console.log(err));
+          }
+        }
+        if (new_email) {
+          reviewer.email = new_email;
+        }
+        if (is_verified) {
+          reviewer.verified = is_verified === "true" ? true : false;
+          if (reviewer.reviews !== 0) {
+            reviewer.reviews = reviewer.reviews.map(review => {
+              return {
+                date: review.date,
+                product: review.product,
+                rating: review.rating,
+                description: review.description,
+                verified: is_verified === "true" ? true : false,
+                approved: review.approved
+              };
+            });
+            Product.find({})
+              .then(products => {
+                products.map(product => {
+                  if (product.reviews.length !== 0) {
+                    product.reviews = product.reviews.map(review => {
+                      if (
+                        review.author === new_name ||
+                        review.author === req.params.name
+                      ) {
+                        return {
+                          rating: review.rating,
+                          date: review.date,
+                          author: review.author,
+                          description: review.description,
+                          verified: is_verified === "true" ? true : false,
+                          approved: review.approved
+                        };
+                      } else {
+                        return review;
+                      }
+                    });
+                    product.save();
+                  }
+                });
+              })
+              .catch(err => console.log(err));
+          }
+        }
+
+        if (
+          new_password &&
+          new_password.length > 6 &&
+          new_password.length < 30
+        ) {
+          bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(new_password, salt, (err, hash) => {
+              if (err) throw err;
+              reviewer.password = hash;
+              reviewer.save();
+            });
+          });
+        }
+      }
+      reviewer
+        .save()
+        .then(reviewer =>
+          res.json({ status: `Reviewer ${reviewer.name} successfully updated` })
+        )
+        .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
+});
+
 module.exports = router;
