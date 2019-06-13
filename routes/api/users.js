@@ -9,6 +9,7 @@ const validateAddAdminInput = require("../../validation/add_admin");
 const validateLoginInput = require("../../validation/login");
 const validateAddReviewerInput = require("../../validation/add_reviewer");
 const validateAddProductInput = require("../../validation/add_product");
+const validateAddProductReviewInput = require("../../validation/add_product_review");
 
 // Load Admin model
 const Admin = require("../../models/Admin");
@@ -19,9 +20,72 @@ const Reviewer = require("../../models/Reviewer");
 // Load Product model
 const Product = require("../../models/Product");
 
+// @route POST api/users/add_product_review
+// @desc AddProductReview review
+// @access Public
+router.post("/add_product_review", (req, res) => {
+  // Form validation
+  const { errors, isValid } = validateAddProductReviewInput(req.body);
+
+  // Check validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
+  Reviewer.findOne({ name: req.body.name }).then(reviewer => {
+    if (!reviewer) {
+      return res.status(400).json({ name: "Reviewer does not yet exist" });
+    }
+    Product.findOne({ name: req.body.product }).then(product => {
+      if (!product) {
+        return res.status(400).json({ product: "Product does not yet exist" });
+      }
+
+      product.reviews.push({
+        rating: req.body.rating,
+        date: Date.now,
+        author: reviewer.name,
+        description: req.body.description,
+        verified: reviewer.verified,
+        approved: false
+      });
+
+      let ratings = [];
+
+      product.reviews.map(review => ratings.push([Number(review.rating), Number(review.rating)]));
+      
+      const weightedMean = arr => {
+        let totalWeight = arr.reduce((acc, curr) => {
+          return acc + curr[1]
+        }, 0);
+        return arr.reduce((acc, curr) => {
+          return acc + curr[0] * curr[1] / totalWeight
+        }, 0);
+      };
+
+      product.rating = weightedMean(ratings).toFixed(1);
+
+      product.save();
+
+      reviewer.reviews.push({
+        author: reviewer.name,
+        product: product.name,
+        rating: req.body.rating,
+        description: req.body.description,
+        verified: reviewer.verified
+      });
+
+      reviewer
+        .save()
+        .then(review => res.json(review))
+        .catch(err => console.log(err));
+    });
+  });
+});
+
 // @route POST api/users/add_product
 // @desc AddProduct product
-// @acess Public
+// @access Public
 router.post("/add_product", (req, res) => {
   // Form validation
   const { errors, isValid } = validateAddProductInput(req.body);
