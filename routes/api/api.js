@@ -35,58 +35,72 @@ router.post("/add_product_review", (req, res) => {
   Reviewer.findOne({ name: req.body.name }).then(reviewer => {
     if (!reviewer) {
       return res.status(400).json({ name: "Reviewer does not yet exist" });
+    } else {
+      Product.findOne({ name: req.body.product }).then(product => {
+        if (!product) {
+          return res
+            .status(400)
+            .json({ product: "Product does not yet exist" });
+        } else {
+          const dateString = new Date().toDateString();
+
+          product.reviews.push({
+            rating: req.body.rating,
+            date: dateString,
+            author: reviewer.name,
+            description: req.body.description,
+            verified: reviewer.verified,
+            approved: false
+          });
+
+          product.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          let ratings = [];
+
+          product.reviews.map(review =>
+            ratings.push([Number(review.rating), Number(review.rating)])
+          );
+
+          const weightedMean = arr => {
+            let totalWeight = arr.reduce((acc, curr) => {
+              return acc + curr[1];
+            }, 0);
+
+            return arr.reduce((acc, curr) => {
+              return acc + (curr[0] * curr[1]) / totalWeight;
+            }, 0);
+          };
+
+          product.rating = weightedMean(ratings).toFixed(1);
+
+          product.save();
+
+          reviewer.reviews.push({
+            date: dateString,
+            product: product.name,
+            rating: req.body.rating,
+            description: req.body.description,
+            verified: reviewer.verified,
+            approved: false
+          });
+
+          reviewer.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          reviewer
+            .save()
+            .then(reviewer =>
+              res.json({
+                date: reviewer.reviews[0].date,
+                product: reviewer.reviews[0].product,
+                rating: reviewer.reviews[0].rating,
+                description: reviewer.reviews[0].description,
+                approved: "Review is awaiting approval"
+              })
+            )
+            .catch(err => console.log(err));
+        }
+      });
     }
-    Product.findOne({ name: req.body.product }).then(product => {
-      if (!product) {
-        return res.status(400).json({ product: "Product does not yet exist" });
-      }
-
-      const dateString = new Date().toDateString();
-
-      product.reviews.push({
-        rating: req.body.rating,
-        date: dateString,
-        author: reviewer.name,
-        description: req.body.description,
-        verified: reviewer.verified,
-        approved: false
-      });
-
-      product.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      let ratings = [];
-
-      product.reviews.map(review => ratings.push([Number(review.rating), Number(review.rating)]));
-      
-      const weightedMean = arr => {
-        let totalWeight = arr.reduce((acc, curr) => {
-          return acc + curr[1]
-        }, 0);
-        return arr.reduce((acc, curr) => {
-          return acc + curr[0] * curr[1] / totalWeight
-        }, 0);
-      };
-
-      product.rating = weightedMean(ratings).toFixed(1);
-
-      product.save();
-
-      reviewer.reviews.push({
-        author: reviewer.name,
-        date: dateString,
-        product: product.name,
-        rating: req.body.rating,
-        description: req.body.description,
-        verified: reviewer.verified
-      });
-
-      reviewer.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      reviewer
-        .save()
-        .then(review => res.json(review))
-        .catch(err => console.log(err));
-    });
   });
 });
 
@@ -105,19 +119,25 @@ router.post("/add_product", (req, res) => {
   Product.findOne({ name: req.body.name }).then(product => {
     if (product) {
       return res.status(400).json({ name: "Product already exists" });
+    } else {
+      const newProduct = new Product({
+        name: req.body.name,
+        description: req.body.description,
+        price: req.body.price
+      });
+
+      newProduct
+        .save()
+        .then(product =>
+          res.json({
+            name: product.name,
+            price: product.price,
+            description: product.description
+          })
+        )
+        .catch(err => console.log(err));
     }
   });
-
-  const newProduct = new Product({
-    name: req.body.name,
-    description: req.body.description,
-    price: req.body.price
-  });
-
-  newProduct
-    .save()
-    .then(product => res.json(product))
-    .catch(err => console.log(err));
 });
 
 // @route POST api/add_admin
@@ -135,25 +155,30 @@ router.post("/add_admin", (req, res) => {
   Admin.findOne({ email: req.body.email }).then(admin => {
     if (admin) {
       return res.status(400).json({ email: "Email already exists" });
+    } else {
+      const newAdmin = new Admin({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password
+      });
+
+      // Hash password before saving in database
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newAdmin.password, salt, (err, hash) => {
+          if (err) throw err;
+          newAdmin.password = hash;
+          newAdmin
+            .save()
+            .then(admin =>
+              res.json({
+                name: admin.name,
+                email: admin.email
+              })
+            )
+            .catch(err => console.log(err));
+        });
+      });
     }
-  });
-
-  const newAdmin = new Admin({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password
-  });
-
-  // Hash password before saving in database
-  bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(newAdmin.password, salt, (err, hash) => {
-      if (err) throw err;
-      newAdmin.password = hash;
-      newAdmin
-        .save()
-        .then(admin => res.json(admin))
-        .catch(err => console.log(err));
-    });
   });
 });
 
@@ -172,26 +197,31 @@ router.post("/add_reviewer", (req, res) => {
   Reviewer.findOne({ email: req.body.email }).then(reviewer => {
     if (reviewer) {
       return res.status(400).json({ email: "Email already exists" });
+    } else {
+      const newReviewer = new Reviewer({
+        name: req.body.name,
+        email: req.body.email,
+        verified: req.body.verified,
+        password: req.body.password
+      });
+
+      // Hash password before saving in database
+      bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(newReviewer.password, salt, (err, hash) => {
+          if (err) throw err;
+          newReviewer.password = hash;
+          newReviewer
+            .save()
+            .then(reviewer =>
+              res.json({
+                name: reviewer.name,
+                email: reviewer.email
+              })
+            )
+            .catch(err => console.log(err));
+        });
+      });
     }
-  });
-
-  const newReviewer = new Reviewer({
-    name: req.body.name,
-    email: req.body.email,
-    verified: req.body.verified,
-    password: req.body.password
-  });
-
-  // Hash password before saving in database
-  bcrypt.genSalt(10, (err, salt) => {
-    bcrypt.hash(newReviewer.password, salt, (err, hash) => {
-      if (err) throw err;
-      newReviewer.password = hash;
-      newReviewer
-        .save()
-        .then(reviewer => res.json(reviewer))
-        .catch(err => console.log(err));
-    });
   });
 });
 
@@ -303,6 +333,103 @@ router.post("/login_reviewer", (req, res) => {
       }
     });
   });
+});
+
+// @route GET api/get_reviewers
+router.get("/get_reviewers", (req, res) => {
+  // Find all Reviewers
+  Reviewer.find({}, "name verified reviews -_id")
+    .then(reviewers => {
+      if (reviewers.length === 0)
+        return res.send("No reviewers yet in database.");
+
+      let reviewersToDisplay = [];
+
+      reviewers.map(reviewer => {
+        if (reviewer.reviews.length !== 0) {
+          reviewer.reviews = reviewer.reviews.filter(review => {
+            if (review.approved === true) {
+              delete review.approved;
+              return review;
+            } else {
+              delete review.author;
+              delete review.date;
+              delete review.product;
+              delete review.rating;
+              delete review.description;
+              delete review.verified;
+              delete review.approved;
+              return (review.status = "Review awaiting approval");
+            }
+          });
+        } else {
+          reviewer.reviews = "No reviews yet in database";
+        }
+        reviewersToDisplay.push(reviewer);
+      });
+
+      res.json(reviewersToDisplay);
+    })
+    .catch(err => console.log(err));
+});
+
+// @route GET api/get_products
+router.get("/get_products", (req, res) => {
+  // Find all Products
+  Product.find({}, "-_id -__v")
+    .then(products => {
+      if (products.length === 0)
+        return res.send("No products yet in database.");
+
+      let productsToDisplay = [];
+
+      const weightedMean = arr => {
+        let totalWeight = arr.reduce((acc, curr) => {
+          return acc + curr[1];
+        }, 0);
+
+        return arr.reduce((acc, curr) => {
+          return acc + (curr[0] * curr[1]) / totalWeight;
+        }, 0);
+      };
+
+      products.map(product => {
+        if (product.reviews.length !== 0) {
+          product.reviews = product.reviews.filter(review => {
+            if (review.approved === true) {
+              delete review.approved;
+              return review;
+            } else {
+              delete review.author;
+              delete review.date;
+              delete review.product;
+              delete review.rating;
+              delete review.description;
+              delete review.verified;
+              delete review.approved;
+              return (review.status = "Review awaiting approval");
+            }
+          });
+
+          let ratings = [];
+
+          product.reviews.map(review => {
+            if (!review.status) {
+              ratings.push([Number(review.rating), Number(review.rating)]);
+            }
+          });
+
+          product.rating = weightedMean(ratings).toFixed(1);
+        } else {
+          product.reviews = "No reviews yet in database";
+        }
+
+        productsToDisplay.push(product);
+      });
+
+      res.json(productsToDisplay);
+    })
+    .catch(err => console.log(err));
 });
 
 module.exports = router;
