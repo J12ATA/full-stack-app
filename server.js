@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 
-const api = require("./routes/api/api");
+const routes = require("./routes");
 
 const app = express();
 
@@ -31,7 +31,7 @@ app.use(passport.initialize());
 require("./config/passport")(passport);
 
 // Routes
-app.use("/api", api);
+app.use("/api", routes);
 
 const port = process.env.PORT || 5000;
 
