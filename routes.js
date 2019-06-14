@@ -604,4 +604,166 @@ router.put("/update_product/:name", (req, res) => {
     .catch(err => console.log(err));
 });
 
+// @route PUT api/update_product_review/:name
+router.put("/update_product_review/:name", (req, res) => {
+  const { new_rating, new_description, is_approved, reviewer_name } = req.body;
+  Product.findOne({ name: req.params.name })
+    .then(product => {
+      if (!product) {
+        return res
+          .status(400)
+          .json({ error: `${req.params.name} is not a registered product` });
+      } else {
+        if (new_rating) {
+          if (product.reviews.length !== 0) {
+            product.reviews = product.reviews.map(review => {
+              if (review.author === reviewer_name) {
+                return {
+                  rating: new_rating,
+                  date: review.date,
+                  author: review.author,
+                  description: review.description,
+                  verified: review.verified,
+                  approved: review.approved
+                };
+              } else {
+                return review;
+              }
+            });
+            Reviewer.findOne({ name: reviewer_name })
+              .then(reviewer => {
+                if (!reviewer) {
+                  return res.status(400).json({
+                    error: `${reviewer_name} is not a registered reviewer`
+                  });
+                } else {
+                  reviewer.reviews = reviewer.reviews.map(review => {
+                    if (review.product === req.params.name) {
+                      return {
+                        date: review.date,
+                        product: review.product,
+                        rating: new_rating,
+                        description: review.description,
+                        verified: review.verified,
+                        approved: review.approved
+                      };
+                    } else {
+                      return review;
+                    }
+                  });
+                  reviewer.save();
+                }
+              })
+              .catch(err => console.log(err));
+          }
+        }
+        if (new_description) {
+          product.reviews = product.reviews.map(review => {
+            if (!review) {
+              return res
+                .status(400)
+                .json({ error: `${req.params.name} has no reviews to update` });
+            } else {
+              if (review.author === reviewer_name) {
+                return {
+                  rating: review.rating,
+                  date: review.date,
+                  author: review.author,
+                  description: new_description,
+                  verified: review.verified,
+                  approved: review.approved
+                };
+              } else {
+                return review;
+              }
+            }
+          });
+          Reviewer.findOne({ name: reviewer_name })
+            .then(reviewer => {
+              if (!reviewer) {
+                return res.status(400).json({
+                  error: `${reviewer_name} is not a registered reviewer`
+                });
+              } else {
+                reviewer.reviews = reviewer.reviews.map(review => {
+                  if (review.product === req.params.name) {
+                    return {
+                      date: review.date,
+                      product: review.product,
+                      rating: review.rating,
+                      description: new_description,
+                      verified: review.verified,
+                      approved: review.approved
+                    };
+                  } else {
+                    return review;
+                  }
+                });
+                reviewer.save();
+              }
+            })
+            .catch(err => console.log(err));
+        }
+        if (is_approved) {
+          product.reviews = product.reviews.map(review => {
+            if (!review) {
+              return res
+                .status(400)
+                .json({ error: `${req.params.name} has no reviews to update` });
+            } else {
+              if (review.author === reviewer_name) {
+                return {
+                  rating: review.rating,
+                  date: review.date,
+                  author: review.author,
+                  description: review.description,
+                  verified: review.verified,
+                  approved: is_approved === "true" ? true : false
+                };
+              } else {
+                return review;
+              }
+            }
+          });
+          Reviewer.findOne({ name: reviewer_name })
+            .then(reviewer => {
+              if (!reviewer) {
+                return res.status(400).json({
+                  error: `${reviewer_name} is not a registered reviewer`
+                });
+              } else {
+                reviewer.reviews = reviewer.reviews.map(review => {
+                  if (review.product === req.params.name) {
+                    return {
+                      date: review.date,
+                      product: review.product,
+                      rating: review.rating,
+                      description: review.description,
+                      verified: review.verified,
+                      approved: is_approved === "true" ? true : false
+                    };
+                  } else {
+                    return review;
+                  }
+                });
+                reviewer.save();
+              }
+            })
+            .catch(err => console.log(err));
+        }
+        product
+          .save()
+          .then(product =>
+            res.json({
+              status: `Product review for ${
+                product.name
+              } by ${reviewer_name} successfully updated`
+            })
+          )
+          .catch(err => console.log(err));
+      }
+    })
+    .catch(err => console.log(err));
+});
+
 module.exports = router;
