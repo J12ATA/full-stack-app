@@ -551,4 +551,57 @@ router.put("/update_reviewer/:name", (req, res) => {
     .catch(err => console.log(err));
 });
 
+// @route PUT api/update_product/:name
+router.put("/update_product/:name", (req, res) => {
+  const { new_name, new_price, new_description } = req.body;
+  Product.findOne({ name: req.params.name })
+    .then(product => {
+      if (!product) {
+        return res
+          .status(400)
+          .json({ error: `${req.params.name} is not a registered product` });
+      } else {
+        if (new_name) {
+          product.name = new_name;
+          Reviewer.find({})
+            .then(reviewers => {
+              reviewers.map(reviewer => {
+                if (reviewer.reviews.length !== 0) {
+                  reviewer.reviews = reviewer.reviews.map(review => {
+                    if (review.product === req.params.name) {
+                      return {
+                        date: review.date,
+                        product: new_name,
+                        rating: review.rating,
+                        description: review.description,
+                        verified: review.verified,
+                        approved: review.approved
+                      };
+                    } else {
+                      return review;
+                    }
+                  });
+                  reviewer.save();
+                }
+              });
+            })
+            .catch(err => console.log(err));
+        }
+        if (new_price) {
+          product.price = new_price;
+        }
+        if (new_description) {
+          product.description = new_description;
+        }
+      }
+      product
+        .save()
+        .then(product =>
+          res.json({ status: `Product ${product.name} successfully updated` })
+        )
+        .catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
+});
+
 module.exports = router;
