@@ -786,12 +786,47 @@ router.put("/update_product_review/:name", (req, res) => {
 });
 
 // @route DELETE api/delete_reviewer/:name
-router.delete("/delete_reviewer/:name", (req, res) => {});
+router.delete("/delete_reviewer/:name", (req, res) => {
+  Reviewer.findOneAndDelete({ name: req.params.name }).then(reviewer => {
+    if (!reviewer) {
+      res.json({ status: `Reviewer ${req.params.name} not found in database` });
+    } else {
+      if (reviewer.reviews.length !== 0) {
+        Product.find({}).then(products => {
+          products.map(product => {
+            if (product.reviews.length !== 0) {
+              product.reviews = product.reviews.map(review => {
+                if (review.author !== req.params.name) {
+                  return review;
+                }
+              });
 
-// @route DELETE api/delete_product/:name
-router.delete("/delete_product/:name", (req, res) => {});
+              let ratings = [];
 
-// @route DELETE api/delete_product_review/:name
-router.delete("/delete_product_review/:name", (req, res) => {});
+              product.reviews.map(review =>
+                ratings.push([Number(review.rating), Number(review.rating)])
+              );
+  
+              const weightedMean = arr => {
+                let totalWeight = arr.reduce((acc, curr) => {
+                  return acc + curr[1];
+                }, 0);
+  
+                return arr.reduce((acc, curr) => {
+                  return acc + (curr[0] * curr[1]) / totalWeight;
+                }, 0);
+              };
+  
+              product.rating = weightedMean(ratings).toFixed(1);
+
+              product.save();
+            }
+          });
+        }).catch(err => console.log(err));
+      }
+      res.json({ success: `Reviewer ${req.params.name} has been successfully deleted` });
+    }
+  }).catch(err => console.log(err));
+});
 
 module.exports = router;
