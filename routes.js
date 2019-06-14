@@ -630,6 +630,25 @@ router.put("/update_product_review/:name", (req, res) => {
                 return review;
               }
             });
+
+            let ratings = [];
+
+            product.reviews.map(review =>
+              ratings.push([Number(review.rating), Number(review.rating)])
+            );
+
+            const weightedMean = arr => {
+              let totalWeight = arr.reduce((acc, curr) => {
+                return acc + curr[1];
+              }, 0);
+
+              return arr.reduce((acc, curr) => {
+                return acc + (curr[0] * curr[1]) / totalWeight;
+              }, 0);
+            };
+
+            product.rating = weightedMean(ratings).toFixed(1);
+
             Reviewer.findOne({ name: reviewer_name })
               .then(reviewer => {
                 if (!reviewer) {
@@ -765,5 +784,14 @@ router.put("/update_product_review/:name", (req, res) => {
     })
     .catch(err => console.log(err));
 });
+
+// @route DELETE api/delete_reviewer/:name
+router.delete("/delete_reviewer/:name", (req, res) => {});
+
+// @route DELETE api/delete_product/:name
+router.delete("/delete_product/:name", (req, res) => {});
+
+// @route DELETE api/delete_product_review/:name
+router.delete("/delete_product_review/:name", (req, res) => {});
 
 module.exports = router;
