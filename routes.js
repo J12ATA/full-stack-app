@@ -799,7 +799,7 @@ router.put("/update_product_review/:name", (req, res) => {
 
 // @route DELETE api/delete_reviewer/:name
 router.delete("/delete_reviewer/:name", (req, res) => {
-  Reviewer.findOneAndDelete({ name: req.params.name })
+  Reviewer.findOne({ name: req.params.name })
     .then(reviewer => {
       if (!reviewer) {
         res.json({
@@ -812,16 +812,21 @@ router.delete("/delete_reviewer/:name", (req, res) => {
               products.map(product => {
                 if (product.reviews.length !== 0) {
                   product.reviews = product.reviews.map(review => {
-                    if (review.author !== req.params.name) {
+                    if (review.author !== req.params.name && review !== null) {
                       return review;
                     }
                   });
 
                   let ratings = [];
 
-                  product.reviews.map(review =>
-                    ratings.push([Number(review.rating), Number(review.rating)])
-                  );
+                  product.reviews.map(review => {
+                    if (review !== undefined) {
+                      ratings.push([
+                        Number(review.rating),
+                        Number(review.rating)
+                      ]);
+                    }
+                  });
 
                   const weightedMean = arr => {
                     let totalWeight = arr.reduce((acc, curr) => {
@@ -836,6 +841,8 @@ router.delete("/delete_reviewer/:name", (req, res) => {
                   product.rating = weightedMean(ratings).toFixed(1);
 
                   product.save();
+
+                  console.log(product);
                 }
               });
             })
