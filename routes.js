@@ -35,83 +35,95 @@ router.post("/add_product_review", (req, res) => {
   Reviewer.findOne({ name: req.body.name }).then(reviewer => {
     if (!reviewer) {
       return res.status(400).json({ name: "Reviewer does not yet exist" });
-    } else if (reviewer.reviews.length !== 0) {
-      const regEx = new RegExp(`^${req.body.product}$`, "i");
+    } else {
+      if (reviewer.reviews.length !== 0) {
+        const regEx = new RegExp(`^${req.body.product}$`, "i");
 
-      let priorReview = reviewer.reviews.map(review => {
-        if (review.product.match(regEx)) return 1;
-      });
-
-      if (priorReview.find(i => i === 1) !== undefined) {
-        return res.status(400).json({ error: "Max of one review per product" });
-      } else {
-        Product.findOne({ name: req.body.product }).then(product => {
-          if (!product) {
-            return res
-              .status(400)
-              .json({ product: "Product does not yet exist" });
-          } else {
-            const dateString = new Date().toDateString();
-
-            product.reviews.push({
-              rating: req.body.rating,
-              date: dateString,
-              author: reviewer.name,
-              description: req.body.description,
-              verified: reviewer.verified,
-              approved: false
-            });
-
-            product.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-            let ratings = [];
-
-            product.reviews.map(review =>
-              ratings.push([Number(review.rating), Number(review.rating)])
-            );
-
-            const weightedMean = arr => {
-              let totalWeight = arr.reduce((acc, curr) => {
-                return acc + curr[1];
-              }, 0);
-
-              return arr.reduce((acc, curr) => {
-                return acc + (curr[0] * curr[1]) / totalWeight;
-              }, 0);
-            };
-
-            product.rating = weightedMean(ratings).toFixed(1);
-
-            product.save();
-
-            reviewer.reviews.push({
-              date: dateString,
-              product: product.name,
-              rating: req.body.rating,
-              description: req.body.description,
-              verified: reviewer.verified,
-              approved: false
-            });
-
-            reviewer.reviews.sort(
-              (a, b) => new Date(b.date) - new Date(a.date)
-            );
-
-            reviewer
-              .save()
-              .then(reviewer =>
-                res.json({
-                  date: reviewer.reviews[0].date,
-                  product: reviewer.reviews[0].product,
-                  rating: reviewer.reviews[0].rating,
-                  description: reviewer.reviews[0].description,
-                  approved: "Review is awaiting approval"
-                })
-              )
-              .catch(err => console.log(err));
-          }
+        let priorReview = reviewer.reviews.map(review => {
+          if (review.product.match(regEx)) return 1;
         });
+
+        if (priorReview.find(i => i === 1) !== undefined) {
+          return res
+            .status(400)
+            .json({ error: "Max of one review per product" });
+        }
       }
+
+      Product.findOne({ name: req.body.product }).then(product => {
+        if (!product) {
+          return res
+            .status(400)
+            .json({ product: "Product does not yet exist" });
+        } else {
+          const dateString = new Date().toDateString();
+
+          product.reviews.push({
+            rating: req.body.rating,
+            date: dateString,
+            author: reviewer.name,
+            description: req.body.description,
+            verified: reviewer.verified,
+            approved: false
+          });
+
+          product.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          let ratings = [];
+
+          product.reviews.map(review =>
+            ratings.push([Number(review.rating), Number(review.rating)])
+          );
+
+          const weightedMean = arr => {
+            let totalWeight = arr.reduce((acc, curr) => {
+              return acc + curr[1];
+            }, 0);
+
+            return arr.reduce((acc, curr) => {
+              return acc + (curr[0] * curr[1]) / totalWeight;
+            }, 0);
+          };
+
+          product.rating = weightedMean(ratings).toFixed(1);
+
+          product.save();
+
+          reviewer.reviews.push({
+            date: dateString,
+            product: product.name,
+            rating: req.body.rating,
+            description: req.body.description,
+            verified: reviewer.verified,
+            approved: false
+          });
+
+          reviewer.reviews.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          let newlyAddedReview = reviewer.reviews
+            .map(review => {
+              if (review.description === req.body.description) {
+                return review;
+              } else {
+                return 1;
+              }
+            })
+            .find(element => element !== 1);
+
+          reviewer
+            .save()
+            .then(reviewer =>
+              res.json({
+                date: newlyAddedReview.date,
+                product: newlyAddedReview.product,
+                rating: newlyAddedReview.rating,
+                description: newlyAddedReview.description,
+                approved: "Review is awaiting approval"
+              })
+            )
+            .catch(err => console.log(err));
+        }
+      });
     }
   });
 });
@@ -787,14 +799,108 @@ router.put("/update_product_review/:name", (req, res) => {
 
 // @route DELETE api/delete_reviewer/:name
 router.delete("/delete_reviewer/:name", (req, res) => {
-  Reviewer.findOneAndDelete({ name: req.params.name }).then(reviewer => {
-    if (!reviewer) {
-      res.json({ status: `Reviewer ${req.params.name} not found in database` });
-    } else {
-      if (reviewer.reviews.length !== 0) {
-        Product.find({}).then(products => {
-          products.map(product => {
-            if (product.reviews.length !== 0) {
+  Reviewer.findOneAndDelete({ name: req.params.name })
+    .then(reviewer => {
+      if (!reviewer) {
+        res.json({
+          status: `Reviewer ${req.params.name} not found in database`
+        });
+      } else {
+        if (reviewer.reviews.length !== 0) {
+          Product.find({})
+            .then(products => {
+              products.map(product => {
+                if (product.reviews.length !== 0) {
+                  product.reviews = product.reviews.map(review => {
+                    if (review.author !== req.params.name) {
+                      return review;
+                    }
+                  });
+
+                  let ratings = [];
+
+                  product.reviews.map(review =>
+                    ratings.push([Number(review.rating), Number(review.rating)])
+                  );
+
+                  const weightedMean = arr => {
+                    let totalWeight = arr.reduce((acc, curr) => {
+                      return acc + curr[1];
+                    }, 0);
+
+                    return arr.reduce((acc, curr) => {
+                      return acc + (curr[0] * curr[1]) / totalWeight;
+                    }, 0);
+                  };
+
+                  product.rating = weightedMean(ratings).toFixed(1);
+
+                  product.save();
+                }
+              });
+            })
+            .catch(err => console.log(err));
+        }
+        res.json({
+          success: `Reviewer ${req.params.name} has been successfully deleted`
+        });
+      }
+    })
+    .catch(err => console.log(err));
+});
+
+// @route DELETE api/delete_product/:name
+router.delete("/delete_product/:name", (req, res) => {
+  Product.findOneAndDelete({ name: req.params.name })
+    .then(product => {
+      if (product.reviews.length !== 0) {
+        Reviewer.find({})
+          .then(reviewers => {
+            reviewers.map(reviewer => {
+              if (reviewer.reviews.length !== 0) {
+                reviewer.reviews = reviewer.reviews.map(review => {
+                  if (review.product === req.params.name) {
+                    return {
+                      date: review.date,
+                      product: `UNAVAILABLE - ${review.product}`,
+                      rating: review.rating,
+                      description: review.description,
+                      verified: review.verified,
+                      approved: review.approved
+                    };
+                  } else {
+                    return review;
+                  }
+                });
+              }
+            });
+          })
+          .catch(err => console.log(err));
+      }
+    })
+    .catch(err => console.log(err));
+});
+
+// @route DELETE api/delete_product_review/:name
+router.delete("/delete_product_review/:name", (req, res) => {
+  Reviewer.findOne({ name: req.params.name })
+    .then(reviewer => {
+      if (!reviewer) {
+        res
+          .status(400)
+          .json({ error: `${req.params.name} is not a registered reviewer` });
+      } else {
+        if (reviewer.reviews.length !== 0) {
+          reviewer.reviews = reviewer.reviews.map(review => {
+            if (review.product !== req.body.product) {
+              return review;
+            }
+          });
+
+          reviewer.save();
+
+          Product.findOne({ name: req.body.product })
+            .then(product => {
               product.reviews = product.reviews.map(review => {
                 if (review.author !== req.params.name) {
                   return review;
@@ -806,27 +912,32 @@ router.delete("/delete_reviewer/:name", (req, res) => {
               product.reviews.map(review =>
                 ratings.push([Number(review.rating), Number(review.rating)])
               );
-  
+
               const weightedMean = arr => {
                 let totalWeight = arr.reduce((acc, curr) => {
                   return acc + curr[1];
                 }, 0);
-  
+
                 return arr.reduce((acc, curr) => {
                   return acc + (curr[0] * curr[1]) / totalWeight;
                 }, 0);
               };
-  
+
               product.rating = weightedMean(ratings).toFixed(1);
 
               product.save();
-            }
+            })
+            .catch(err => console.log(err));
+        } else {
+          return res.status(400).json({
+            error: `${req.params.name} has not submited a review for product ${
+              req.body.product
+            }, nothing to delete`
           });
-        }).catch(err => console.log(err));
+        }
       }
-      res.json({ success: `Reviewer ${req.params.name} has been successfully deleted` });
-    }
-  }).catch(err => console.log(err));
+    })
+    .catch(err => console.log(err));
 });
 
 module.exports = router;
