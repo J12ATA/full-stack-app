@@ -2,60 +2,60 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutAdmin } from "../../actions/authActions";
+import { userData } from "../../actions/userActions";
+import { createNewUser } from '../../utils/api';
 import MaterialTable from "material-table";
 
+const COLUMNS = [
+  { title: "Name", field: "name" },
+  { title: "Email", field: "email" },
+  { title: "Reviews", field: "reviewCount", editable: "never" },
+];
+
 class AdminDashboard extends Component {
+  /*
+  handle data from out endpoint here:
+  fields: name, email, reviewsCount, reviews
+
+  lets nest the actual reviews *maybe*
+
+  for certain, we will have 3 columns:
+  name, email, reviews (total num of reviews)
+
+  */
+
   constructor(props) {
     super(props);
-    this.state = {
-      columns: [
-        {
-          title: "Name",
-          field: "name",
-          grouping: false
-        },
-        {
-          title: "Verified",
-          field: "verified",
-          type: "boolean",
-          editComponent: props => (
-            <input
-              type="text"
-              value={props.value}
-              onChange={e => props.onChange(e.target.value.match(/^true$/i))}
-            />
-          )
-        },
-        {
-          title: "Reviews",
-          field: "reviewCount",
-          type: "numeric"
-        },
-        {
-          title: "City",
-          field: "location",
-          lookup: {
-            34: "Las Vegas",
-            63: "Los Angeles"
-          }
-        }
-      ],
-      data: [
-        {
-          name: "Pedro Guzman",
-          verified: true,
-          reviewCount: 3,
-          location: 63
-        },
-        {
-          name: "Johny Bravo",
-          verified: false,
-          reviewCount: 5,
-          location: 34
-        }
-      ]
-    };
+    this.state = {};
   }
+
+  componentDidMount() {
+    this.props.loadUserData();
+  };
+
+  addNewUser = async user => {
+    console.log('add', user);
+
+    await createNewUser({
+      ...user,
+      password: '123456789',
+      password2: '123456789',
+    });
+
+    this.props.loadUserData();
+
+    return Promise.resolve();
+  };
+
+  updateUser = user => {
+    console.log('update', user);
+    return Promise.resolve();
+  };
+
+  deleteUser = user => {
+    console.log('delete', user);
+    return Promise.resolve();
+  };
 
   onLogoutClick = e => {
     e.preventDefault();
@@ -63,59 +63,32 @@ class AdminDashboard extends Component {
   };
 
   render() {
-    const { admin } = this.props.auth;
+    if (this.props.loading) return <div>loading</div>;
+
+    const { users, auth: { admin } } = this.props;
+    const { addNewUser, updateUser, deleteUser, onLogoutClick } = this;
 
     return (
-      <div style={{ height: "75vh" }} className="container valign-wrapper">
+      <div style={{ width: "100vw" }} className="container valign-wrapper">
         <div className="row">
-          <div className="col s12 center-align">
+          <div style={{ maxWidth: "100vw" }} className="col s12 center-align">
             <h4>
               <b>Hey there,</b> {admin.name.split(" ")[0]}
             </h4>
             <br />
             <MaterialTable
               title="USERS"
-              columns={this.state.columns}
-              data={this.state.data}
+              columns={COLUMNS}
+              data={users}
               editable={{
-                onRowAdd: newData =>
-                  new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      {
-                        const data = this.state.data;
-                        data.push(newData);
-                        this.setState({ data }, () => resolve());
-                      }
-                      resolve();
-                    }, 1000);
-                  }),
-                onRowUpdate: (newData, oldData) =>
-                  new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      {
-                        const data = this.state.data;
-                        const index = data.indexOf(oldData);
-                        data[index] = newData;
-                        this.setState({ data }, () => resolve());
-                      }
-                      resolve();
-                    }, 1000);
-                  }),
-                onRowDelete: oldData =>
-                  new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      {
-                        let data = this.state.data;
-                        const index = data.indexOf(oldData);
-                        data.splice(index, 1);
-                        this.setState({ data }, () => resolve());
-                      }
-                      resolve();
-                    }, 1000);
-                  })
+                onRowAdd: addNewUser,
+                onRowUpdate: updateUser,
+                onRowDelete: deleteUser
               }}
               options={{
-                grouping: true
+                pageSizeOptions: [5],
+                showFirstLastPageButtons: false,
+                emptyRowsWhenPaging: false
               }}
             />
             <button
@@ -125,7 +98,7 @@ class AdminDashboard extends Component {
                 letterSpacing: "1.5px",
                 marginTop: "1rem"
               }}
-              onClick={this.onLogoutClick}
+              onClick={onLogoutClick}
               className="btn btn-large waves-effect waves-light hoverable blue accent-3"
             >
               Logout
@@ -138,15 +111,38 @@ class AdminDashboard extends Component {
 }
 
 AdminDashboard.propTypes = {
+  loadUserData: PropTypes.func.isRequired,
   logoutAdmin: PropTypes.func.isRequired,
+  users: PropTypes.array.isRequired,
   auth: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth
+const mapStateToProps = ({ users: userStore, auth }) => {
+  if (!userStore.users.length) {
+    return {
+      loading: true,
+      auth: {},
+      users: [],
+    }
+  }
+
+  const normalizedUsers = userStore.users.map(user => ({
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    reviewCount: user.reviewsCount,
+  }));
+
+  return {
+    loading: false,
+    auth,
+    users: normalizedUsers,
+  }
+};
+
+const mapDispatchToProps = dispatch => ({
+  loadUserData: () => dispatch(userData()),
+  logoutAdmin: () => dispatch(logoutAdmin()),
 });
 
-export default connect(
-  mapStateToProps,
-  { logoutAdmin }
-)(AdminDashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(AdminDashboard);
