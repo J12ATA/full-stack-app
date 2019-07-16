@@ -3,8 +3,6 @@ import { getAllUserData } from "../utils/api";
 
 // async action creator
 export const userData = () => async dispatch => {
-  debugger;
-
   try {
     const response = await getAllUserData();
     const users = response.data;
