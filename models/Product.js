@@ -11,10 +11,10 @@ const ProductSchema = new Schema({
 }, { toJSON: { virtuals: true }, id: false });
 
 ProductSchema.virtual("reviews", {
-  ref: "Review", // Use the Review model
-  localField: "name", // Find reviews where 'localField'
-  foreignField: "product", // is equal to 'foreignField'
-  justOne: false // true ? single doc : an array of docs
+  ref: "Review",
+  localField: "name",
+  foreignField: "product",
+  justOne: false
 });
 
 module.exports = mongoose.model("Product", ProductSchema);

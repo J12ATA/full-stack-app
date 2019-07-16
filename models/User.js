@@ -10,10 +10,17 @@ const UserSchema = new Schema({
 }, { toJSON: { virtuals: true }, id: false });
 
 UserSchema.virtual("reviews", {
-  ref: "Review", // Use the Review model
-  localField: "name", // Find reviews where 'localField'
-  foreignField: "author", // is equal to 'foreignField'
-  justOne: false // true ? single doc : an array of docs
+  ref: "Review",
+  localField: "name",
+  foreignField: "author",
+  justOne: false
+});
+
+UserSchema.virtual("reviewsCount", {
+  ref: "Review",
+  localField: "name",
+  foreignField: "author",
+  count: true
 });
 
 module.exports = mongoose.model("User", UserSchema);
