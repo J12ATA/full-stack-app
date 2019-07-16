@@ -10,7 +10,7 @@ class Landing extends Component {
             <br />
             <div className="col s6">
               <Link
-                to="/add_reviewer"
+                to="/add_user"
                 style={{
                   width: "140px",
                   borderRadius: "3px",
