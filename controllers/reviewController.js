@@ -1,23 +1,20 @@
 "use strict";
 
-// Load input validation
 const validateAddReviewInput = require("../validation/add_review");
 const validateUpdateReviewInput = require("../validation/update_review");
 
-// Load Review model
 const Review = require("../models/Review");
-// Load Product model
 const Product = require("../models/Product");
 
 exports.add_review = async (req, res, next) => {
   const input = req.body;
-  // Form validation
   const { errors, isValid } = validateAddReviewInput(input);
-  // Check validation
+
   if (!isValid) {
-    const err = new Error(`Bad Request: ${errors}`);
+    const err = {};
+    err.errors = errors;
     err.status = 400;
-    return next(err);
+    next(err);
   }
   const newReview = new Review(input);
   newReview.save().then(review => 
@@ -26,20 +23,23 @@ exports.add_review = async (req, res, next) => {
 };
 
 exports.get_all_reviews = async (req, res, next) => {
-  Review.find({}, "-__v").then(reviews => 
+  const options = "-__v";
+  Review.find({}, options).then(reviews => 
     res.status(200).json(reviews)
   ).catch(err => next(err));
 };
 
 exports.get_review = async (req, res, next) => {
   const { _id } = req.params;
-  Review.findById(_id, "-__v").then(review => {
+  const options = "-__v";
+  Review.findById(_id, options).then(review => {
     if (!review) {
-      const err = new Error(`Bad Request: No review found with _id ${_id}`);
+      const err = {};
+      err.errors = { _id: `No review found with _id ${_id}` };
       err.status = 400;
       next(err);
     } else {
-      return res.status(200).json(review);
+      res.status(200).json(review);
     }
   }).catch(err => next(err));
 };
@@ -48,24 +48,32 @@ exports.update_review = async (req, res, next) => {
   const update = req.body;
   const { _id } = req.params;
   const { errors, isValid } = validateUpdateReviewInput(update);
-  // Check validation
+
   if (!isValid) {
-    const err = new Error(`Bad Request: ${errors}`);
+    const err = {};
+    err.errors = errors;
     err.status = 400;
-    return next(err);
+    next(err);
   }
+  
   if (update._id) {
-    const err = new Error("Update failed, cannot update field: _id");
+    const err = {};
+    err.errors = { _id: "Update failed, cannot update field: _id" };
     err.status = 400;
-    return next(err);
+    next(err);
   } else {
     Review.findById(_id).then(review => {
       if (!review) {
-        const err = new Error(`Update failed, no review found with _id: ${_id}`);
+        const err = {};
+        err.errors = { _id: `Update failed, no review found with _id: ${_id}` };
         err.status = 400;
-        return next(err);
+        next(err);
       } else {
-        Product.findOne({ name: review.product }).populate("reviews", "rating approved").then(product => {
+        const field1 = "reviews";
+        const field2 = "reviewsCount";
+        const select = "rating approved"
+        
+        Product.findOne({ name: review.product }).populate(field1, select).populate(field2).then(product => {
           let ratings = [];
       
           if (update.approved === true) {
@@ -74,7 +82,7 @@ exports.update_review = async (req, res, next) => {
       
           product.reviews.map(review => {
             if (review.approved === true) { 
-              ratings.push([ Number(review.rating), Number(review.rating) ])
+              ratings.push([ Number(review.rating), Number(review.rating) ]);
             }
           });
       
@@ -104,11 +112,12 @@ exports.delete_review = async (req, res, next) => {
   const { _id } = req.params;
   Review.findByIdAndRemove(_id).then(deletedReview => {
     if (!deletedReview) {
-      const err = new Error(`No review found with _id: ${_id}`);
+      const err = {};
+      err.errors = { _id: `No review found with _id: ${_id}` };
       err.status = 400;
       next(err);
     } else {
-      return res.status(200).json({
+      res.status(200).json({
         message: "Success!",
         deleted: deletedReview._id
       });
