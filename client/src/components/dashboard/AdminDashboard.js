@@ -5,11 +5,15 @@ import { logoutAdmin } from "../../actions/authActions";
 import { userData } from "../../actions/userActions";
 import { createNewUser } from '../../utils/api';
 import MaterialTable from "material-table";
+import LoadingDashboard from "./loadingDashboard";
 
 const COLUMNS = [
   { title: "Name", field: "name" },
   { title: "Email", field: "email" },
-  { title: "Reviews", field: "reviewCount", editable: "never" },
+  { title: "Reviews", field: "reviewCount", editable: "never", hidden: false },
+  { 
+    title: "Password", field: "password", hidden: true },
+  { title: "Confirm Password", field: "password2", hidden: true }
 ];
 
 class AdminDashboard extends Component {
@@ -34,13 +38,15 @@ class AdminDashboard extends Component {
   };
 
   addNewUser = async user => {
-    console.log('add', user);
+    COLUMNS[2].hidden = true;
+    COLUMNS[3].hidden = false;
+    COLUMNS[4].hidden = false;
 
-    await createNewUser({
-      ...user,
-      password: '123456789',
-      password2: '123456789',
-    });
+    await createNewUser({ ...user });
+
+    COLUMNS[2].hidden = false;
+    COLUMNS[3].hidden = true;
+    COLUMNS[4].hidden = true;
 
     this.props.loadUserData();
 
@@ -48,7 +54,15 @@ class AdminDashboard extends Component {
   };
 
   updateUser = user => {
+    COLUMNS[2].hidden = true;
+    COLUMNS[3].hidden = false;
+    COLUMNS[4].hidden = false;
+
     console.log('update', user);
+
+    COLUMNS[2].hidden = false;
+    COLUMNS[3].hidden = true;
+    COLUMNS[4].hidden = true;
     return Promise.resolve();
   };
 
@@ -61,12 +75,12 @@ class AdminDashboard extends Component {
     e.preventDefault();
     this.props.logoutAdmin();
   };
-
+  
   render() {
-    if (this.props.loading) return <div>loading</div>;
-
     const { users, auth: { admin } } = this.props;
     const { addNewUser, updateUser, deleteUser, onLogoutClick } = this;
+
+    if (this.props.loading) return <LoadingDashboard />
 
     return (
       <div style={{ width: "100vw" }} className="container valign-wrapper">
@@ -88,7 +102,8 @@ class AdminDashboard extends Component {
               options={{
                 pageSizeOptions: [5],
                 showFirstLastPageButtons: false,
-                emptyRowsWhenPaging: false
+                emptyRowsWhenPaging: false,
+                // isLoading: true
               }}
             />
             <button
