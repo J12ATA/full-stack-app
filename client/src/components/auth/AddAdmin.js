@@ -18,7 +18,6 @@ class AddAdmin extends Component {
   }
 
   componentDidMount() {
-    // If logged in and admin navigates to AddAdmin page, should redirect them to admin_dashboard
     if (this.props.auth.isAuthenticated) {
       this.props.history.push("/admin_dashboard");
     }
@@ -26,9 +25,7 @@ class AddAdmin extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
-      this.setState({
-        errors: nextProps.errors
-      });
+      this.setState({ errors: nextProps.errors });
     }
   }
 
@@ -57,8 +54,8 @@ class AddAdmin extends Component {
         <div className="row">
           <div className="col s8 offset-s2">
             <Link to="/" className="btn-flat waves-effect">
-              <i className="material-icons left">keyboard_backspace</i> Back to
-              home
+              <i className="material-icons left">keyboard_backspace</i> 
+              Back to Home
             </Link>
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
               <h4>
@@ -158,7 +155,4 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(
-  mapStateToProps,
-  { addAdmin }
-)(withRouter(AddAdmin));
+export default connect(mapStateToProps, { addAdmin })(withRouter(AddAdmin));

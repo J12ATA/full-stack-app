@@ -2,11 +2,10 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { loginAdmin } from "../../actions/authActions";
-
+import { loginUser } from "../../actions/authActions";
 import classnames from "classnames";
 
-class LoginAdmin extends Component {
+class LoginUser extends Component {
   constructor() {
     super();
     this.state = {
@@ -18,13 +17,13 @@ class LoginAdmin extends Component {
 
   componentDidMount() {
     if (this.props.auth.isAuthenticated) {
-      this.props.history.push("/admin_dashboard");
+      this.props.history.push("/user_dashboard");
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.auth.isAuthenticated) {
-      this.props.history.push("/admin_dashboard");
+      this.props.history.push("/user_dashboard");
     }
 
     if (nextProps.errors) {
@@ -39,12 +38,12 @@ class LoginAdmin extends Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const userData = {
-      email: this.state.email,
-      password: this.state.password
+    const userData = { 
+      email: this.state.email, 
+      password: this.state.password 
     };
 
-    this.props.loginAdmin(userData);
+    this.props.loginUser(userData);
   };
 
   render() {
@@ -60,10 +59,10 @@ class LoginAdmin extends Component {
             </Link>
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
               <h4>
-                <b>Login Admin</b>
+                <b>Login User</b>
               </h4>
               <p className="grey-text text-darken-1">
-                Don't have an Admin account? <Link to="/add_admin">Register</Link>
+                Don't have a User account? <Link to="/add_user">Register</Link>
               </p>
             </div>
             <form noValidate onSubmit={this.onSubmit}>
@@ -123,8 +122,8 @@ class LoginAdmin extends Component {
   }
 }
 
-LoginAdmin.propTypes = {
-  loginAdmin: PropTypes.func.isRequired,
+LoginUser.propTypes = {
+  loginUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -134,4 +133,4 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { loginAdmin })(LoginAdmin);
+export default connect(mapStateToProps, { loginUser })(LoginUser);
