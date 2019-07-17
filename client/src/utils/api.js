@@ -16,7 +16,5 @@ export const createNewUser = user => {
 };
 
 export const deleteUser = id => {
-  return axios.delete(`${BASE_URL}/users/delete_user`, {
-    id,
-  });
+  return axios.delete(`${BASE_URL}/users/${id}`);
 };
