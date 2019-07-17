@@ -1,7 +1,13 @@
 import React, { Component } from "react";
+import { logoutAdmin } from "../../actions/authActions";
 import MaterialTable from "material-table";
 
 export default class loadingDashboard extends Component {
+  onLogoutClick = e => {
+    e.preventDefault();
+    logoutAdmin();
+  };
+
   render() {
     return (
       <div style={{ width: "100vw" }} className="container valign-wrapper">
@@ -31,6 +37,18 @@ export default class loadingDashboard extends Component {
                 emptyRowsWhenPaging: false,
               }}
             />
+            <button
+              style={{
+                width: "150px",
+                borderRadius: "3px",
+                letterSpacing: "1.5px",
+                marginTop: "1rem"
+              }}
+              onClick={this.onLogoutClick}
+              className="btn btn-large waves-effect waves-light hoverable blue accent-3"
+            >
+              Logout
+            </button>
           </div>
         </div>
       </div>
