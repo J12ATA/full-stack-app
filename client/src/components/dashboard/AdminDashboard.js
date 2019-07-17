@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutAdmin } from "../../actions/authActions";
 import { userData } from "../../actions/userActions";
-import { createNewUser, deleteUser } from '../../utils/api';
+import { createNewUser, deleteUser, updateUser } from '../../utils/api';
 import MaterialTable from "material-table";
 import LoadingDashboard from "./loadingDashboard";
 
@@ -17,17 +17,6 @@ const COLUMNS = [
 ];
 
 class AdminDashboard extends Component {
-  /*
-  handle data from out endpoint here:
-  fields: name, email, reviewsCount, reviews
-
-  lets nest the actual reviews *maybe*
-
-  for certain, we will have 3 columns:
-  name, email, reviews (total num of reviews)
-
-  */
-
   constructor(props) {
     super(props);
     this.state = {};
@@ -42,6 +31,7 @@ class AdminDashboard extends Component {
     COLUMNS[3].hidden = false;
     COLUMNS[4].hidden = false;
   };
+
   columnsReset = () => {
     COLUMNS[2].hidden = false;
     COLUMNS[3].hidden = true;
@@ -50,30 +40,23 @@ class AdminDashboard extends Component {
 
   addNewUser = async user => {
     this.columnsHidden();
-
     await createNewUser({ ...user });
-
     this.columnsReset();
-
     this.props.loadUserData();
-
     return Promise.resolve();
   };
 
-  updateUser = user => {
+  updateUser = async user => {
     this.columnsHidden();
-
-    console.log('update', user);
-
+    await updateUser(user);
+    this.props.loadUserData();
     this.columnsReset();
     return Promise.resolve();
   };
 
   deleteUser = async user => {
     await deleteUser(user.id);
-
     this.props.loadUserData();
-    
     return Promise.resolve();
   };
 
