@@ -16,9 +16,13 @@ export default class loadingDashboard extends Component {
               columns={[
                 { title: "loading" }, 
                 { title: "loading" }, 
-                { title: "loading" },
                 { title: "loading" }
               ]}
+              actions={[{
+                icon: "save",
+                tooltip: "Save",
+                onClick: () => {}
+              }]}
               data={[]}
               isLoading={true}
               options={{
