@@ -17,13 +17,13 @@ class LoginAdmin extends Component {
   }
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated) {
+    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "Admin") {
       this.props.history.push("/admin_dashboard");
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.auth.isAuthenticated) {
+    if (nextProps.auth.isAuthenticated && localStorage.tokenOwner === "Admin") {
       this.props.history.push("/admin_dashboard");
     }
 

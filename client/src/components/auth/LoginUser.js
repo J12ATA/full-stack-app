@@ -16,13 +16,13 @@ class LoginUser extends Component {
   }
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated) {
+    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
       this.props.history.push("/user_dashboard");
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.auth.isAuthenticated) {
+    if (nextProps.auth.isAuthenticated && localStorage.tokenOwner === "User") {
       this.props.history.push("/user_dashboard");
     }
 

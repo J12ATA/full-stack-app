@@ -19,7 +19,7 @@ class AddUser extends Component {
 
   componentDidMount() {
     // If logged in and user navigates to Register page, should redirect them to user_dashboard
-    if (this.props.auth.isAuthenticated) {
+    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
       this.props.history.push("/user_dashboard");
     }
   }

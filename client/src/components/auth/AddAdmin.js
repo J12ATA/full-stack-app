@@ -18,7 +18,7 @@ class AddAdmin extends Component {
   }
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated) {
+    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "Admin") {
       this.props.history.push("/admin_dashboard");
     }
   }
