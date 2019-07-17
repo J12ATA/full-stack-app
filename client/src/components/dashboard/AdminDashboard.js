@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutAdmin } from "../../actions/authActions";
 import { userData } from "../../actions/userActions";
-import { createNewUser } from '../../utils/api';
+import { createNewUser, deleteUser } from '../../utils/api';
 import MaterialTable from "material-table";
 import LoadingDashboard from "./loadingDashboard";
 
@@ -37,16 +37,23 @@ class AdminDashboard extends Component {
     this.props.loadUserData();
   };
 
-  addNewUser = async user => {
+  columnsHidden = () => {
     COLUMNS[2].hidden = true;
     COLUMNS[3].hidden = false;
     COLUMNS[4].hidden = false;
-
-    await createNewUser({ ...user });
-
+  };
+  columnsReset = () => {
     COLUMNS[2].hidden = false;
     COLUMNS[3].hidden = true;
     COLUMNS[4].hidden = true;
+  };
+
+  addNewUser = async user => {
+    this.columnsHidden();
+
+    await createNewUser({ ...user });
+
+    this.columnsReset();
 
     this.props.loadUserData();
 
@@ -54,20 +61,19 @@ class AdminDashboard extends Component {
   };
 
   updateUser = user => {
-    COLUMNS[2].hidden = true;
-    COLUMNS[3].hidden = false;
-    COLUMNS[4].hidden = false;
+    this.columnsHidden();
 
     console.log('update', user);
 
-    COLUMNS[2].hidden = false;
-    COLUMNS[3].hidden = true;
-    COLUMNS[4].hidden = true;
+    this.columnsReset();
     return Promise.resolve();
   };
 
-  deleteUser = user => {
-    console.log('delete', user);
+  deleteUser = async user => {
+    await deleteUser(user.id);
+
+    this.props.loadUserData();
+    
     return Promise.resolve();
   };
 
@@ -103,7 +109,23 @@ class AdminDashboard extends Component {
                 pageSizeOptions: [5],
                 showFirstLastPageButtons: false,
                 emptyRowsWhenPaging: false,
-                // isLoading: true
+              }}
+              localization={{
+                body: {
+                  editRow: {
+                    deleteText: "Delete this user?" 
+                  }
+                }
+              }}
+              tableRef={props => {
+                if(props &&this.state.modifiedHook!==true) {
+                  let cancel=props.onEditingCanceled;
+                  props.onEditingCanceled=(mode,props) => {
+                    this.columnsReset();
+                    this.setState({error:{},modifiedHook:true});
+                    cancel(mode,props);
+                  };
+                }
               }}
             />
             <button
