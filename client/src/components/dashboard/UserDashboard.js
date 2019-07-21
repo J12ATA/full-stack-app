@@ -2,46 +2,45 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { logoutUser } from "../../actions/authActions";
+import { productData } from "../../actions/productActions";
+import { createNewProduct, deleteProduct, updateProduct } from '../../utils/api';
 import MaterialTable from "material-table";
+import LoadingDashboard from "./loadingDashboard";
+
+const COLUMNS = [
+  { title: "Name", field: "name" },
+  { title: "Price", field: "price" },
+  { title: "Reviews", field: "reviewCount", editable: "never" },
+  { title: "Description", field: "description" }
+];
 
 class UserDashboard extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      columns: [
-        {
-          title: "Name",
-          field: "name",
-          grouping: false
-        },
-        {
-          title: "Reviews",
-          field: "reviewCount",
-          type: "numeric"
-        },
-        {
-          title: "City",
-          field: "location",
-          lookup: {
-            34: "Las Vegas",
-            63: "Los Angeles"
-          }
-        }
-      ],
-      data: [
-        {
-          name: "Pedro Guzman",
-          reviewCount: 3,
-          location: 63
-        },
-        {
-          name: "Johny Bravo",
-          reviewCount: 5,
-          location: 34
-        }
-      ]
-    };
+    this.state = {};
   }
+
+  componentDidMount() {
+    this.props.loadProductData();
+  };
+
+  addNewProduct = async product => {
+    await createNewProduct({ ...product });
+    this.props.loadProductData();
+    return Promise.resolve();
+  };
+
+  updateProduct = async product => {
+    await updateProduct(product);
+    this.props.loadProductData();
+    return Promise.resolve();
+  };
+
+  deleteProduct = async product => {
+    await deleteProduct(product.id);
+    this.props.loadProductData();
+    return Promise.resolve();
+  };
 
   onLogoutClick = e => {
     e.preventDefault();
@@ -49,7 +48,10 @@ class UserDashboard extends Component {
   };
 
   render() {
-    const { user } = this.props.auth;
+    const { products, auth: { user } } = this.props;
+    const { addNewProduct, updateProduct, deleteProduct, onLogoutClick } = this;
+
+    if (this.props.loading) return <LoadingDashboard />
 
     return (
       <div style={{ width: "100vw" }} className="container valign-wrapper">
@@ -60,48 +62,25 @@ class UserDashboard extends Component {
             </h4>
             <br />
             <MaterialTable
-              title="REVIEWS"
-              columns={this.state.columns}
-              data={this.state.data}
+              title="PRODUCTS"
+              columns={COLUMNS}
+              data={products}
               editable={{
-                onRowAdd: newData =>
-                  new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      {
-                        const data = this.state.data;
-                        data.push(newData);
-                        this.setState({ data }, () => resolve());
-                      }
-                      resolve();
-                    }, 1000);
-                  }),
-                onRowUpdate: (newData, oldData) =>
-                  new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      {
-                        const data = this.state.data;
-                        const index = data.indexOf(oldData);
-                        data[index] = newData;
-                        this.setState({ data }, () => resolve());
-                      }
-                      resolve();
-                    }, 1000);
-                  }),
-                onRowDelete: oldData =>
-                  new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      {
-                        let data = this.state.data;
-                        const index = data.indexOf(oldData);
-                        data.splice(index, 1);
-                        this.setState({ data }, () => resolve());
-                      }
-                      resolve();
-                    }, 1000);
-                  })
+                onRowAdd: addNewProduct,
+                onRowUpdate: updateProduct,
+                onRowDelete: deleteProduct
               }}
               options={{
-                grouping: true
+                pageSizeOptions: [5],
+                showFirstLastPageButtons: false,
+                emptyRowsWhenPaging: false,
+              }}
+              localization={{
+                body: {
+                  editRow: {
+                    deleteText: "Delete this product?" 
+                  }
+                }
               }}
             />
             <button
@@ -111,7 +90,7 @@ class UserDashboard extends Component {
                 letterSpacing: "1.5px",
                 marginTop: "1rem"
               }}
-              onClick={this.onLogoutClick}
+              onClick={onLogoutClick}
               className="btn btn-large waves-effect waves-light hoverable blue accent-3"
             >
               Logout
@@ -124,12 +103,38 @@ class UserDashboard extends Component {
 }
 
 UserDashboard.propTypes = {
+  loadProductData: PropTypes.func.isRequired,
   logoutUser: PropTypes.func.isRequired,
+  products: PropTypes.array.isRequired,
   auth: PropTypes.object.isRequired
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth
+const mapStateToProps = ({ products: productStore, auth }) => {
+  if (!productStore.products.length) {
+    return {
+      loading: true,
+      auth: {},
+      products: [],
+    }
+  }
+
+  const normalizedProducts = productStore.products.map(product => ({
+    id: product._id,
+    name: product.name,
+    description: product.description,
+    reviewCount: product.reviewsCount,
+  }));
+
+  return {
+    loading: false,
+    auth,
+    products: normalizedProducts,
+  }
+};
+
+const mapDispatchToProps = dispatch => ({
+  loadUserData: () => dispatch(productData()),
+  logoutUser: () => dispatch(logoutUser()),
 });
 
-export default connect(mapStateToProps, { logoutUser })(UserDashboard);
+export default connect(mapStateToProps, mapDispatchToProps)(UserDashboard);
