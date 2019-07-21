@@ -4,3 +4,4 @@ export const SET_CURRENT_ADMIN = "SET_CURRENT_ADMIN";
 export const SET_CURRENT_USER = "SET_CURRENT_USER";
 export const USER_LOADING = "USER_LOADING";
 export const SET_USER_DATA = "SET_USER_DATA";
+export const SET_PRODUCT_DATA = "SET_PRODUCT_DATA";
