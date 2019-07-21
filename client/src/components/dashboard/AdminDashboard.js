@@ -11,8 +11,7 @@ const COLUMNS = [
   { title: "Name", field: "name" },
   { title: "Email", field: "email" },
   { title: "Reviews", field: "reviewCount", editable: "never", hidden: false },
-  { 
-    title: "Password", field: "password", hidden: true },
+  { title: "Password", field: "password", hidden: true },
   { title: "Confirm Password", field: "password2", hidden: true }
 ];
 

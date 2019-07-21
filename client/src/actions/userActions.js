@@ -9,7 +9,7 @@ export const userData = () => async dispatch => {
 
     dispatch(setUserData(users));
   } catch(err) {
-    dispatch({ type: GET_ERRORS, payload: {} })
+    dispatch({ type: GET_ERRORS, payload: {} });
   }
 };
 
