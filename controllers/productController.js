@@ -9,15 +9,15 @@ const Product = require("../models/Product");
 
 exports.add_product = async (req, res, next) => {
   const input = req.body;
-  // Form validation
   const { errors, isValid } = validateAddProductInput(input);
-  // Check validation
+
   if (!isValid) {
     const err = {};
     err.errors = errors;
     err.status = 400;
     next(err);
   }
+  
   const newProduct = new Product(input);
   newProduct.save().then(product =>
     res.status(201).json({ message: "Success!", productId: product._id })
