@@ -17,4 +17,11 @@ ProductSchema.virtual("reviews", {
   justOne: false
 });
 
+ProductSchema.virtual("reviewsCount", {
+  ref: "Review",
+  localField: "name",
+  foreignField: "product",
+  count: true
+});
+
 module.exports = mongoose.model("Product", ProductSchema);
