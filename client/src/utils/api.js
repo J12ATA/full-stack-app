@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = 'http://localhost:5000/api';
+const BASE_URL = "http://35.232.153.179/api";
 
 export const getAllUserData = async () => {
   const response = await axios.get(`${BASE_URL}/users/get_all_users`);
