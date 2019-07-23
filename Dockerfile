@@ -1,10 +1,20 @@
-FROM node:10
+FROM mhart/alpine-node:10
 
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY . /usr/src/app
+COPY package.json package-lock.json ./
 
-EXPOSE 3000 5000
+RUN npm ci --prod
 
-CMD ["npm", "run", "dev"]
+# Only copy over the node pieces we need from the above image
+FROM mhart/alpine-node:slim-10
+
+WORKDIR /app
+
+COPY --from=0 /app .
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["node", "server.js"]
