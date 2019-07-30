@@ -50,7 +50,6 @@ exports.add_admin = async (req, res, next) => {
 exports.login_admin = async (req, res, next) => {
   const input = req.body;
   const { email, password } = input;
-
   const { errors, isValid } = validateLoginInput(input);
 
   if (!isValid) {
@@ -70,10 +69,9 @@ exports.login_admin = async (req, res, next) => {
       bcrypt.compare(password, admin.password).then(isMatch => {
         if (isMatch) {
           const payload = { _id: admin._id, name: admin.name };
-          jwt.sign(payload, keys.secretOrKey, {
-            expiresIn: 31556926
-          }, (err, token) => {
-            res.status(200).json({
+          jwt.sign(payload, keys.secretOrKey, { expiresIn: 31556926 }, (err, token) => {
+            if (err) next(err);
+            if (token) res.status(200).json({
               message: "Success!",
               success: true,
               token: "Bearer " + token
