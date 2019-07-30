@@ -7,4 +7,8 @@ class Navbar extends Component {
   }
 }
 
-export default connect(Navbar);
+const mapStateToProps = state => ({
+  auth: state.auth
+});
+
+export default connect(mapStateToProps)(Navbar);
