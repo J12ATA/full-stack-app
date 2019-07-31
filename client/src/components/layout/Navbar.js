@@ -11,10 +11,16 @@ import Drawer, {
 import List, { ListItem, ListDivider } from "@material/react-list";
 
 class Navbar extends Component {
+  state = {
+    isOpen: false
+  };
+
   render() {
+    const { isOpen } = this.state;
+
     return (
       <div>
-        <Drawer>
+        <Drawer modal open={isOpen}>
           <DrawerHeader>
             <DrawerTitle tag="h2">{"MENU"}</DrawerTitle>
           </DrawerHeader>
