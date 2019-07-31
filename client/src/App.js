@@ -22,6 +22,8 @@ import LoginUser from "./components/auth/LoginUser";
 import AddUser from "./components/auth/AddUser";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
+import Products from "./components/Products";
+import Users from "./components/Users";
 
 class App extends Component {
   componentDidMount() {
@@ -55,6 +57,8 @@ class App extends Component {
             <Route exact path="/add_user" component={AddUser} />
             <Route exact path="/login_admin" component={LoginAdmin} />
             <Route exact path="/login_user" component={LoginUser} />
+            <Route exact path="/products" component={Products} />
+            <Route exact path="/users" component={Users} />
             <Switch>
               <PrivateRoute
                 exact
