@@ -20,6 +20,7 @@ class Navbar extends Component {
   };
 
   render() {
+    const { admin, user } = this.props.auth;
     const { isOpen } = this.state;
     const { onDrawerClose } = this;
 
@@ -27,7 +28,9 @@ class Navbar extends Component {
       <div>
         <Drawer modal open={isOpen} onClose={onDrawerClose}>
           <DrawerHeader>
-            <DrawerTitle tag="h2">{"MENU"}</DrawerTitle>
+            <DrawerTitle tag="h2">
+              {admin.name || user.name || "MENU"}
+            </DrawerTitle>
           </DrawerHeader>
           <DrawerContent>
             <ListDivider tag="div" />
