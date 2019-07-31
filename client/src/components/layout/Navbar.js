@@ -10,6 +10,43 @@ import Drawer, {
 } from "@material/react-drawer";
 import List, { ListItem, ListDivider } from "@material/react-list";
 
+const startList = [
+  {
+    name: "Products",
+    graphic: { iconName: "shopping_cart", label: "products" }
+  },
+  {
+    name: "Users",
+    graphic: { iconName: "people", label: "users" }
+  }
+];
+
+const endList = [
+  {
+    name: "Logout",
+    graphic: { iconName: "exit_to_app", label: "logout" }
+  }
+];
+
+const USER_NAVBAR_LIST = [...startList, ...endList];
+
+const ADMIN_NAVBAR_LIST = [
+  ...startList,
+  {
+    name: "Reviews",
+    graphic: { iconName: "star", label: "reviews" }
+  },
+  ...endList
+];
+
+const NAVBAR_LIST = [
+  ...startList,
+  {
+    name: "Login",
+    graphic: { iconName: "vpn_key", label: "login" }
+  }
+];
+
 class Navbar extends Component {
   state = {
     isOpen: false
