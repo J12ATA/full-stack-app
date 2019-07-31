@@ -15,12 +15,17 @@ class Navbar extends Component {
     isOpen: false
   };
 
+  onDrawerClose = () => {
+    this.setState({ isOpen: false });
+  };
+
   render() {
     const { isOpen } = this.state;
+    const { onDrawerClose } = this;
 
     return (
       <div>
-        <Drawer modal open={isOpen}>
+        <Drawer modal open={isOpen} onClose={onDrawerClose}>
           <DrawerHeader>
             <DrawerTitle tag="h2">{"MENU"}</DrawerTitle>
           </DrawerHeader>
