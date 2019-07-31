@@ -3,12 +3,18 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 import { logoutAdmin, logoutUser } from "../../actions/authActions";
+import MaterialIcon from "@material/react-material-icon";
 import Drawer, {
   DrawerContent,
   DrawerHeader,
   DrawerTitle
 } from "@material/react-drawer";
-import List, { ListItem, ListDivider } from "@material/react-list";
+import List, {
+  ListItem,
+  ListDivider,
+  ListItemGraphic,
+  ListItemText
+} from "@material/react-list";
 
 const startList = [
   {
@@ -57,9 +63,17 @@ class Navbar extends Component {
   };
 
   render() {
-    const { admin, user } = this.props.auth;
-    const { isOpen } = this.state;
-    const { onDrawerClose } = this;
+    const { admin, user, isAuthenticated } = this.props.auth;
+    const { isOpen, activeListItem } = this.state;
+    const { tokenOwner } = localStorage;
+    const { onDrawerClose, setState } = this;
+    let navList;
+
+    if (!isAuthenticated) {
+      navList = NAVBAR_LIST;
+    } else {
+      navList = tokenOwner === "User" ? USER_NAVBAR_LIST : ADMIN_NAVBAR_LIST;
+    }
 
     return (
       <div>
@@ -72,7 +86,25 @@ class Navbar extends Component {
           <DrawerContent>
             <ListDivider tag="div" />
             <List>
-              <ListItem />
+              {navList.map(({ name, graphic }, i = 0) => {
+                const { iconName, label } = graphic;
+                return (
+                  <ListItem
+                    key={name}
+                    onClick={() => {
+                      setState({ activeListItem: name });
+                    }}
+                    activated={activeListItem === name}
+                  >
+                    <ListItemGraphic
+                      graphic={
+                        <MaterialIcon icon={iconName} aria-label={label} />
+                      }
+                    />
+                    <ListItemText tabIndex={i++} primaryText={name} />
+                  </ListItem>
+                );
+              })}
             </List>
           </DrawerContent>
         </Drawer>
