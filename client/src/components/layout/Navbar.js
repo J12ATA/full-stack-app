@@ -39,8 +39,8 @@ const USER_NAVBAR_LIST = [...startList, ...endList];
 const ADMIN_NAVBAR_LIST = [
   ...startList,
   {
-    name: "Reviews",
-    graphic: { iconName: "star", label: "reviews" }
+    name: "Dashboard",
+    graphic: { iconName: "dashboard", label: "dashboard" }
   },
   ...endList
 ];
@@ -62,17 +62,62 @@ class Navbar extends Component {
     this.setState({ isOpen: false });
   };
 
+  onNavBarItemClick = name => {
+    switch (name) {
+      case "Products":
+        this.onProductsClick();
+        break;
+      case "Users":
+        this.onUsersClick();
+        break;
+      case "Dashboard":
+        this.onDashboardClick();
+        break;
+      case "Logout":
+        this.onLogoutClick();
+        break;
+      default:
+        this.onDrawerClose();
+    }
+  };
+
+  onProductsClick = () => {
+    this.props.history.push(this.props.history.location);
+    this.props.history.push("/products");
+    this.onDrawerClose();
+  };
+
+  onUsersClick = () => {
+    this.props.history.push(this.props.history.location);
+    this.props.history.push("/users");
+    this.onDrawerClose();
+  };
+
+  onDashboardClick = () => {
+    this.props.history.push(this.props.location);
+    this.props.history.push("/admin_dashboard");
+    this.onDrawerClose();
+  };
+
+  onLogoutClick = () => {
+    this.logoutUser();
+    this.logoutAdmin();
+    this.onDrawerClose();
+  };
+
   render() {
     const { admin, user, isAuthenticated } = this.props.auth;
     const { isOpen, activeListItem } = this.state;
-    const { tokenOwner } = localStorage;
-    const { onDrawerClose, setState } = this;
+    const { onDrawerClose, setState, onNavBarItemClick } = this;
     let navList;
 
     if (!isAuthenticated) {
       navList = NAVBAR_LIST;
     } else {
-      navList = tokenOwner === "User" ? USER_NAVBAR_LIST : ADMIN_NAVBAR_LIST;
+      navList =
+        localStorage.tokenOwner === "User"
+          ? USER_NAVBAR_LIST
+          : ADMIN_NAVBAR_LIST;
     }
 
     return (
@@ -93,6 +138,7 @@ class Navbar extends Component {
                     key={name}
                     onClick={() => {
                       setState({ activeListItem: name });
+                      onNavBarItemClick(name);
                     }}
                     activated={activeListItem === name}
                   >
