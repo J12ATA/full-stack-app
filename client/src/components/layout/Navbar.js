@@ -3,10 +3,30 @@ import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 import { logoutAdmin, logoutUser } from "../../actions/authActions";
+import Drawer, {
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle
+} from "@material/react-drawer";
+import List, { ListItem, ListDivider } from "@material/react-list";
 
 class Navbar extends Component {
   render() {
-    return <div>{/* home of new navbar */}</div>;
+    return (
+      <div>
+        <Drawer>
+          <DrawerHeader>
+            <DrawerTitle tag="h2">{"MENU"}</DrawerTitle>
+          </DrawerHeader>
+          <DrawerContent>
+            <ListDivider tag="div" />
+            <List>
+              <ListItem />
+            </List>
+          </DrawerContent>
+        </Drawer>
+      </div>
+    );
   }
 }
 
