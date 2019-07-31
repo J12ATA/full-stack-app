@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
+import { logoutAdmin, logoutUser } from "../../actions/authActions";
 
 class Navbar extends Component {
   render() {
@@ -17,4 +18,14 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-export default withRouter(connect(mapStateToProps)(Navbar));
+const mapDispatchToProps = dispatch => ({
+  logoutAdmin: () => dispatch(logoutAdmin()),
+  logoutUser: () => dispatch(logoutUser())
+});
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(Navbar)
+);
