@@ -22,7 +22,6 @@ import LoginUser from "./components/auth/LoginUser";
 import AddUser from "./components/auth/AddUser";
 import PrivateRoute from "./components/private-route/PrivateRoute";
 import AdminDashboard from "./components/dashboard/AdminDashboard";
-import UserDashboard from "./components/dashboard/UserDashboard";
 
 class App extends Component {
   componentDidMount() {
@@ -61,11 +60,6 @@ class App extends Component {
                 exact
                 path="/admin_dashboard"
                 component={AdminDashboard}
-              />
-              <PrivateRoute
-                exact
-                path="/user_dashboard"
-                component={UserDashboard}
               />
             </Switch>
           </div>
