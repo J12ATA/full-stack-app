@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import { logoutAdmin, logoutUser } from "../../actions/authActions";
 import MaterialIcon from "@material/react-material-icon";
 import Drawer, {
+  DrawerAppContent,
   DrawerContent,
   DrawerHeader,
   DrawerTitle
@@ -15,6 +16,13 @@ import List, {
   ListItemGraphic,
   ListItemText
 } from "@material/react-list";
+import TopAppBar, {
+  TopAppBarFixedAdjust,
+  TopAppBarIcon,
+  TopAppBarRow,
+  TopAppBarSection,
+  TopAppBarTitle
+} from "@material/react-top-app-bar";
 
 const startList = [
   {
@@ -55,11 +63,16 @@ const NAVBAR_LIST = [
 
 class Navbar extends Component {
   state = {
+    activeListItem: null,
     isOpen: false
   };
 
   onDrawerClose = () => {
     this.setState({ isOpen: false });
+  };
+
+  onMenuClick = () => {
+    this.setState({ isOpen: true });
   };
 
   onNavBarItemClick = name => {
@@ -108,7 +121,7 @@ class Navbar extends Component {
   render() {
     const { admin, user, isAuthenticated } = this.props.auth;
     const { isOpen, activeListItem } = this.state;
-    const { onDrawerClose, setState, onNavBarItemClick } = this;
+    const { onDrawerClose, setState, onNavBarItemClick, onMenuClick } = this;
     let navList;
 
     if (!isAuthenticated) {
@@ -154,6 +167,24 @@ class Navbar extends Component {
             </List>
           </DrawerContent>
         </Drawer>
+        <DrawerAppContent>
+          <TopAppBar fixed>
+            <TopAppBarRow>
+              <TopAppBarSection>
+                <TopAppBarIcon navIcon tabIndex={0}>
+                  <MaterialIcon
+                    hasRipple
+                    icon="menu"
+                    aria-label="menu"
+                    onClick={onMenuClick}
+                  />
+                </TopAppBarIcon>
+                <TopAppBarTitle>{activeListItem || "WELCOME"}</TopAppBarTitle>
+              </TopAppBarSection>
+            </TopAppBarRow>
+          </TopAppBar>
+          <TopAppBarFixedAdjust />
+        </DrawerAppContent>
       </div>
     );
   }
