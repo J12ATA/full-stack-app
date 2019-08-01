@@ -144,7 +144,7 @@ class Navbar extends Component {
           <DrawerContent>
             <ListDivider tag="div" />
             <List>
-              {navList.map(({ name, graphic }, i = 0) => {
+              {navList.map(({ name, graphic }, i) => {
                 const { iconName, label } = graphic;
                 return (
                   <ListItem
@@ -160,7 +160,7 @@ class Navbar extends Component {
                         <MaterialIcon icon={iconName} aria-label={label} />
                       }
                     />
-                    <ListItemText tabIndex={i++} primaryText={name} />
+                    <ListItemText tabIndex={i} primaryText={name} />
                   </ListItem>
                 );
               })}
