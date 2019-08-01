@@ -3,14 +3,7 @@ import "normalize.css";
 import "./app.scss";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import jwt_decode from "jwt-decode";
-import setAuthToken from "./utils/setAuthToken";
-import {
-  setCurrentAdmin,
-  setCurrentUser,
-  logoutUser,
-  logoutAdmin
-} from "./actions/authActions";
-
+import { logout } from "./actions/authActions";
 import { Provider } from "react-redux";
 import store from "./store";
 
@@ -27,22 +20,10 @@ import Users from "./components/Users";
 
 class App extends Component {
   componentDidMount() {
-    const { jwtToken, tokenOwner } = localStorage;
-
-    if (jwtToken) {
-      const decoded = jwt_decode(jwtToken);
+    if (localStorage.jwtToken) {
+      const decoded = jwt_decode(localStorage.jwtToken);
       const currentTime = Date.now() / 1000;
-
-      setAuthToken(jwtToken);
-
-      tokenOwner === "Admin"
-        ? store.dispatch(setCurrentAdmin(decoded))
-        : store.dispatch(setCurrentUser(decoded));
-
-      if (decoded.exp < currentTime) {
-        store.dispatch(logoutAdmin());
-        store.dispatch(logoutUser());
-      }
+      if (decoded.exp < currentTime) logout();
     }
   }
 
