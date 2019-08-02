@@ -37,12 +37,12 @@ class LoginUser extends Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const userData = {
+    const loginData = {
       email: this.state.email,
       password: this.state.password
     };
 
-    this.props.loginUser(userData);
+    this.props.loginUser(loginData);
   };
 
   render() {
