@@ -2,7 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import PropTypes from "prop-types";
-import { logoutAdmin, logoutUser } from "../../actions/authActions";
+import LoginDialog from "../auth/LoginDialog";
+import { logout, setToggleLogin } from "../../actions/authActions";
 import MaterialIcon from "@material/react-material-icon";
 import Drawer, {
   DrawerAppContent,
@@ -63,65 +64,102 @@ const NAVBAR_LIST = [
 
 class Navbar extends Component {
   state = {
-    activeListItem: null,
-    isOpen: false
+    activeListItem: "",
+    isDrawerOpen: false,
+    navTitle: ""
+  };
+
+  componentDidMount() {
+    this.handleNavTitle();
+  }
+
+  handleNavTitle = () => {
+    const errorTitle = "Error 404: Page Not Found";
+    const path = this.props.history.location.pathname;
+    const route = `${path.match(/^\/\w+\/?\w+/)}`;
+    const slashCount = (route.match(/\//g) || []).length;
+
+    if (path.match(/^\/$/)) return this.setState({ navTitle: "Welcome" });
+
+    if (slashCount === 2) {
+      let rootRoute = `${route.match(/^\/\w+/)}`;
+      let subRoute = `${route.match(/\/\w+$/)}`;
+      rootRoute = `${rootRoute[1].toUpperCase()}${rootRoute.slice(2)}`;
+      subRoute = subRoute.slice(1);
+      return rootRoute.match(/^(Products|Users|Dashboard)$/)
+        ? this.setState({
+            navTitle: subRoute,
+            activeListItem: rootRoute
+          })
+        : this.setState({ navTitle: errorTitle });
+    }
+
+    if (route.length) {
+      const titleToReturn = `${route[1].toUpperCase()}${route.slice(2)}`;
+      return route.match(/^\/(products|users|dashboard)$/)
+        ? this.setState({
+            navTitle: titleToReturn,
+            activeListItem: titleToReturn
+          })
+        : this.setState({ navTitle: errorTitle });
+    }
   };
 
   onDrawerClose = () => {
-    this.setState({ isOpen: false });
+    this.setState({ isDrawerOpen: false });
   };
 
   onMenuClick = () => {
-    this.setState({ isOpen: true });
+    this.setState({ isDrawerOpen: true });
   };
 
   onNavBarItemClick = name => {
     switch (name) {
       case "Products":
-        this.onProductsClick();
-        break;
+        return this.onProductsClick();
       case "Users":
-        this.onUsersClick();
-        break;
+        return this.onUsersClick();
       case "Dashboard":
-        this.onDashboardClick();
-        break;
+        return this.onDashboardClick();
       case "Logout":
-        this.onLogoutClick();
-        break;
+        return this.onLogoutClick();
+      case "Login":
+        return this.onLoginClick();
       default:
-        this.onDrawerClose();
+        return this.onDrawerClose();
     }
   };
 
   onProductsClick = () => {
-    this.props.history.push(this.props.history.location);
     this.props.history.push("/products");
     this.onDrawerClose();
   };
 
   onUsersClick = () => {
-    this.props.history.push(this.props.history.location);
     this.props.history.push("/users");
     this.onDrawerClose();
   };
 
   onDashboardClick = () => {
-    this.props.history.push(this.props.location);
     this.props.history.push("/admin_dashboard");
     this.onDrawerClose();
   };
 
+  onLoginClick = () => {
+    this.props.setToggleLogin(true);
+    this.onDrawerClose();
+  };
+
   onLogoutClick = () => {
-    this.logoutUser();
-    this.logoutAdmin();
+    this.setState({ navTitle: "Welcome" });
+    this.props.logout(localStorage.tokenOwner);
     this.onDrawerClose();
   };
 
   render() {
     const { admin, user, isAuthenticated } = this.props.auth;
-    const { isOpen, activeListItem } = this.state;
-    const { onDrawerClose, setState, onNavBarItemClick, onMenuClick } = this;
+    const { isDrawerOpen, activeListItem, navTitle } = this.state;
+    const { onDrawerClose, onNavBarItemClick, onMenuClick } = this;
     let navList;
 
     if (!isAuthenticated) {
@@ -135,7 +173,7 @@ class Navbar extends Component {
 
     return (
       <div>
-        <Drawer modal open={isOpen} onClose={onDrawerClose}>
+        <Drawer modal open={isDrawerOpen} onClose={onDrawerClose}>
           <DrawerHeader>
             <DrawerTitle tag="h2">
               {admin.name || user.name || "MENU"}
@@ -150,7 +188,11 @@ class Navbar extends Component {
                   <ListItem
                     key={name}
                     onClick={() => {
-                      setState({ activeListItem: name });
+                      if (name !== "Login" && name !== "logout")
+                        this.setState({
+                          activeListItem: name,
+                          navTitle: name
+                        });
                       onNavBarItemClick(name);
                     }}
                     activated={activeListItem === name}
@@ -179,11 +221,12 @@ class Navbar extends Component {
                     onClick={onMenuClick}
                   />
                 </TopAppBarIcon>
-                <TopAppBarTitle>{activeListItem || "WELCOME"}</TopAppBarTitle>
+                <TopAppBarTitle>{navTitle}</TopAppBarTitle>
               </TopAppBarSection>
             </TopAppBarRow>
           </TopAppBar>
           <TopAppBarFixedAdjust />
+          <LoginDialog />
         </DrawerAppContent>
       </div>
     );
@@ -191,8 +234,7 @@ class Navbar extends Component {
 }
 
 Navbar.propTypes = {
-  logoutAdmin: PropTypes.func.isRequired,
-  logoutUser: PropTypes.func.isRequired,
+  logout: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired
 };
 
@@ -200,10 +242,10 @@ const mapStateToProps = state => ({
   auth: state.auth
 });
 
-const mapDispatchToProps = dispatch => ({
-  logoutAdmin: () => dispatch(logoutAdmin()),
-  logoutUser: () => dispatch(logoutUser())
-});
+const mapDispatchToProps = {
+  logout,
+  setToggleLogin
+};
 
 export default withRouter(
   connect(
