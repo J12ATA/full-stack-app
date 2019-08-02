@@ -14,9 +14,10 @@ import LoginAdmin from "./components/auth/LoginAdmin";
 import LoginUser from "./components/auth/LoginUser";
 import AddUser from "./components/auth/AddUser";
 import PrivateRoute from "./components/private-route/PrivateRoute";
-import AdminDashboard from "./components/dashboard/AdminDashboard";
+import Dashboard from "./components/dashboard/Dashboard";
 import Products from "./components/Products";
 import Users from "./components/Users";
+import Page404 from "./components/layout/Page404";
 
 class App extends Component {
   componentDidMount() {
@@ -31,8 +32,8 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Router>
-          <div>
-            <Navbar />
+          <Navbar />
+          <Switch>
             <Route exact path="/" component={Landing} />
             <Route exact path="/add_admin" component={AddAdmin} />
             <Route exact path="/add_user" component={AddUser} />
@@ -40,14 +41,9 @@ class App extends Component {
             <Route exact path="/login_user" component={LoginUser} />
             <Route exact path="/products" component={Products} />
             <Route exact path="/users" component={Users} />
-            <Switch>
-              <PrivateRoute
-                exact
-                path="/admin_dashboard"
-                component={AdminDashboard}
-              />
-            </Switch>
-          </div>
+            <Route component={Page404} />
+            <PrivateRoute exact path="/dashboard" component={Dashboard} />
+          </Switch>
         </Router>
       </Provider>
     );
