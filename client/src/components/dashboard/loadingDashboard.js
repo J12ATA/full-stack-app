@@ -1,40 +1,32 @@
 import React, { Component } from "react";
-import { logoutAdmin } from "../../actions/authActions";
 import MaterialTable from "material-table";
 
-export default class loadingDashboard extends Component {
-  onLogoutClick = e => {
-    e.preventDefault();
-    logoutAdmin();
-  };
-
+class loadingDashboard extends Component {
   render() {
     return (
       <div style={{ width: "100vw" }} className="container valign-wrapper">
         <div className="row">
           <div style={{ maxWidth: "100vw" }} className="col s12 center-align">
-            <h4>
-              <b>Hey there, ...</b>
-            </h4>
-            <br />
             <MaterialTable
               title="LOADING"
               columns={[
-                { title: "loading" }, 
-                { title: "loading" }, 
+                { title: "loading" },
+                { title: "loading" },
                 { title: "loading" }
               ]}
-              actions={[{
-                icon: "save",
-                tooltip: "Save",
-                onClick: () => {}
-              }]}
+              actions={[
+                {
+                  icon: "save",
+                  tooltip: "Save",
+                  onClick: () => {}
+                }
+              ]}
               data={[]}
               isLoading={true}
               options={{
                 pageSizeOptions: [5],
                 showFirstLastPageButtons: false,
-                emptyRowsWhenPaging: false,
+                emptyRowsWhenPaging: false
               }}
             />
             <button
@@ -53,5 +45,7 @@ export default class loadingDashboard extends Component {
         </div>
       </div>
     );
-  };
-};
+  }
+}
+
+export default loadingDashboard;
