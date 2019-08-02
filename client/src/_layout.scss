@@ -1,0 +1,27 @@
+@import "./variables";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex; 
+  flex-direction: column; 
+  min-height: 100vh;
+}
+
+.landing-page,
+.admin-table {
+  display: flex;
+  height: 89.9vh;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.app-bar-title {
+  margin: auto;
+}
+
+.login-btn {
+  width: 105.73px;
+}
