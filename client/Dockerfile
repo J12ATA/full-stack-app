@@ -7,6 +7,8 @@ COPY package*.json /app/
 
 RUN npm install
 
+RUN npm rebuild node-sass
+
 RUN npm audit fix
 
 COPY ./ /app/
