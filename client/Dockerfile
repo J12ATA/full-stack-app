@@ -11,6 +11,8 @@ RUN npm audit fix
 
 COPY ./ /app/
 
+RUN export SASS_PATH=./node_modules 
+
 RUN npm run build
 
 # Stage 1, based on Nginx, to have only the compiled app, ready for production with Nginx
