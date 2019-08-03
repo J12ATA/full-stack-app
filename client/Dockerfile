@@ -7,13 +7,9 @@ COPY package*.json /app/
 
 RUN npm install
 
-RUN npm rebuild node-sass
-
-RUN npm audit fix
-
 COPY ./ /app/
 
-RUN export SASS_PATH=./node_modules 
+ENV SASS_PATH=./node_modules 
 
 RUN npm run build
 
