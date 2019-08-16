@@ -10,7 +10,7 @@ import {
   TOGGLE_LOGIN
 } from "./types";
 
-const BASE_URL = "http://35.239.132.5/api";
+const BASE_URL = "/api";
 
 export const addAdmin = (userData, history) => dispatch => {
   axios

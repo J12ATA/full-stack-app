@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://35.232.153.179/api";
+const BASE_URL = "/api";
 
 export const getAllUserData = async () => {
   const response = await axios.get(`${BASE_URL}/users/get_all_users`);
@@ -11,7 +11,7 @@ export const createNewUser = user => {
     name: user.name,
     email: user.email,
     password: user.password,
-    password2: user.password2,
+    password2: user.password2
   });
 };
 
@@ -20,9 +20,9 @@ export const updateUser = user => {
     name: user.name,
     email: user.email,
     password: user.password,
-    password2: user.password2,
+    password2: user.password2
   });
-}
+};
 
 export const deleteUser = id => {
   return axios.delete(`${BASE_URL}/users/${id}`);
@@ -47,7 +47,7 @@ export const updateProduct = product => {
     price: product.price,
     description: product.description
   });
-}
+};
 
 export const deleteProduct = id => {
   return axios.delete(`${BASE_URL}/products/${id}`);
