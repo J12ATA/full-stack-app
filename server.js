@@ -7,25 +7,28 @@ const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 const reviewRoutes = require("./routes/review");
 const cors = require("cors");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 8080;
 const app = express();
 
 mongoose.set("useFindAndModify", false);
 
 app.use(cors());
-app.options('*', cors());
+app.options("*", cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const db = require("./config/keys").mongoURI;
 
-mongoose.connect(db, { useNewUrlParser: true }).then(() => {
-  if (mongoose.connection.readyState !== 1) console.log("MongoDB disconnected")
-}).catch(err => next(err));
+mongoose
+  .connect(db, { useNewUrlParser: true })
+  .then(() => {
+    if (mongoose.connection.readyState !== 1)
+      console.log("MongoDB disconnected");
+  })
+  .catch(err => next(err));
 
 app.use(passport.initialize());
-
 
 require("./config/passport")(passport);
 
@@ -39,8 +42,7 @@ app.use((err, req, res, next) => {
   res.status(status || 500).send(errors || "Internal Server Error");
 });
 
-if (!module.parent) app.listen(port, () =>
-  console.log(`Server up and running on port ${port}!`)
-);
+if (!module.parent)
+  app.listen(port, () => console.log(`Server up and running on port ${port}!`));
 
 module.exports = app;
