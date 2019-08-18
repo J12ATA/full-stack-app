@@ -1,8 +1,8 @@
 require("dotenv").config();
 
-const { CLUSTER, DATABASE, PASSWORD, SECRET, USERNAME } = process.env;
+const { MONGO_URI, SECRET } = process.env;
 
 module.exports = {
-  mongoURI: `mongodb+srv://${USERNAME}:${PASSWORD}@${CLUSTER}-8yvto.gcp.mongodb.net/${DATABASE}?retryWrites=true&w=majority`,
-  secretOrKey: `${SECRET}`
+  mongoURI: MONGO_URI,
+  secretOrKey: SECRET
 };
