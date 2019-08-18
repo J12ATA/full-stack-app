@@ -9,8 +9,11 @@ const reviewRoutes = require("./routes/review");
 const cors = require("cors");
 const port = process.env.PORT || 8080;
 const app = express();
+const path = require("path");
 
 mongoose.set("useFindAndModify", false);
+
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.use(cors());
 app.options("*", cors());
@@ -40,6 +43,10 @@ app.use("/api/reviews", reviewRoutes);
 app.use((err, req, res, next) => {
   const { errors, status } = err;
   res.status(status || 500).send(errors || "Internal Server Error");
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 if (!module.parent)
