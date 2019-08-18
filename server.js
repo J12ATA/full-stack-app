@@ -29,7 +29,7 @@ mongoose
     if (mongoose.connection.readyState !== 1)
       console.log("MongoDB disconnected");
   })
-  .catch(err => next(err));
+  .catch(err => console.log(err));
 
 app.use(passport.initialize());
 
