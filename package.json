@@ -10,7 +10,8 @@
     "server-watch": "nodemon server.js",
     "client": "npm start --prefix client",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "heroku-postbuild": "cd client && yarn && yarn run build"
   },
   "keywords": [],
   "author": "",
