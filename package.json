@@ -10,7 +10,7 @@
     "server": "nodemon server.js",
     "server-watch": "nodemon server.js",
     "test": "jest --watch",
-    "heroku-postbuild": "cd client && yarn && yarn run build"
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "keywords": [
     "Node.js",
