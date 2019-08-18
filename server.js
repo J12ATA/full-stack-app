@@ -9,7 +9,7 @@ const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 const reviewRoutes = require("./routes/review");
 const cors = require("cors");
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 5000;
 const app = express();
 const path = require("path");
 
