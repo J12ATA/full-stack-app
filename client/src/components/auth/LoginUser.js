@@ -10,23 +10,12 @@ class LoginUser extends Component {
     super();
     this.state = {
       email: "",
-      password: "",
-      errors: {}
+      password: ""
     };
   }
   componentDidMount() {
     if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
       this.props.history.push("/products");
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.auth.isAuthenticated && localStorage.tokenOwner === "User") {
-      this.props.history.push("/products");
-    }
-
-    if (nextProps.errors) {
-      this.setState({ errors: nextProps.errors });
     }
   }
 
@@ -46,7 +35,7 @@ class LoginUser extends Component {
   };
 
   render() {
-    const { errors } = this.state;
+    const errors = this.props.errors || {};
 
     return (
       <div className="container">
@@ -123,8 +112,7 @@ class LoginUser extends Component {
 
 LoginUser.propTypes = {
   loginUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  auth: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({

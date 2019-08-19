@@ -22,7 +22,7 @@ class LoginAdmin extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(nextProps) {
     if (nextProps.auth.isAuthenticated && localStorage.tokenOwner === "Admin") {
       this.props.history.push("/admin_dashboard");
     }

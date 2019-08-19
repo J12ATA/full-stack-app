@@ -23,7 +23,7 @@ class AddAdmin extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
     }
