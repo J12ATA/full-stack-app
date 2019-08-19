@@ -4,6 +4,7 @@ import { withRouter } from "react-router";
 import PropTypes from "prop-types";
 import LoginDialog from "../auth/LoginDialog";
 import { logout, setToggleLogin } from "../../actions/authActions";
+import { setNavTitle } from "../../actions/titleActions";
 import MaterialIcon from "@material/react-material-icon";
 import Drawer, {
   DrawerAppContent,
@@ -65,44 +66,16 @@ const NAVBAR_LIST = [
 class Navbar extends Component {
   state = {
     activeListItem: "",
-    isDrawerOpen: false,
-    navTitle: ""
+    isDrawerOpen: false
   };
 
   componentDidMount() {
     this.handleNavTitle();
   }
 
-  handleNavTitle = () => {
-    const errorTitle = "Error 404: Page Not Found";
-    const path = this.props.history.location.pathname;
-    const route = `${path.match(/^\/\w+\/?\w+/)}`;
-    const slashCount = (route.match(/\//g) || []).length;
-
-    if (path.match(/^\/$/)) return this.setState({ navTitle: "Welcome" });
-
-    if (slashCount === 2) {
-      let rootRoute = `${route.match(/^\/\w+/)}`;
-      let subRoute = `${route.match(/\/\w+$/)}`;
-      rootRoute = `${rootRoute[1].toUpperCase()}${rootRoute.slice(2)}`;
-      subRoute = subRoute.slice(1);
-      return rootRoute.match(/^(Products|Users|Dashboard)$/)
-        ? this.setState({
-            navTitle: subRoute,
-            activeListItem: rootRoute
-          })
-        : this.setState({ navTitle: errorTitle });
-    }
-
-    if (route.length) {
-      const titleToReturn = `${route[1].toUpperCase()}${route.slice(2)}`;
-      return route.match(/^\/(products|users|dashboard)$/)
-        ? this.setState({
-            navTitle: titleToReturn,
-            activeListItem: titleToReturn
-          })
-        : this.setState({ navTitle: errorTitle });
-    }
+  handleNavTitle = name => {
+    this.setState({ activeListItem: name });
+    return name ? this.props.setNavTitle(name) : "Welcome";
   };
 
   onDrawerClose = () => {
@@ -151,15 +124,20 @@ class Navbar extends Component {
   };
 
   onLogoutClick = () => {
-    this.setState({ navTitle: "Welcome" });
     this.props.logout(localStorage.tokenOwner);
     this.onDrawerClose();
   };
 
   render() {
     const { admin, user, isAuthenticated } = this.props.auth;
-    const { isDrawerOpen, activeListItem, navTitle } = this.state;
-    const { onDrawerClose, onNavBarItemClick, onMenuClick } = this;
+    const { isDrawerOpen, activeListItem } = this.state;
+    const {
+      onDrawerClose,
+      onNavBarItemClick,
+      onMenuClick,
+      handleNavTitle
+    } = this;
+    const { title } = this.props.title;
     let navList;
 
     if (!isAuthenticated) {
@@ -189,10 +167,7 @@ class Navbar extends Component {
                     key={name}
                     onClick={() => {
                       if (name !== "Login" && name !== "logout")
-                        this.setState({
-                          activeListItem: name,
-                          navTitle: name
-                        });
+                        handleNavTitle(name);
                       onNavBarItemClick(name);
                     }}
                     activated={activeListItem === name}
@@ -221,7 +196,7 @@ class Navbar extends Component {
                     onClick={onMenuClick}
                   />
                 </TopAppBarIcon>
-                <TopAppBarTitle>{navTitle}</TopAppBarTitle>
+                <TopAppBarTitle>{title}</TopAppBarTitle>
               </TopAppBarSection>
             </TopAppBarRow>
           </TopAppBar>
@@ -239,12 +214,14 @@ Navbar.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  auth: state.auth
+  auth: state.auth,
+  title: state.title
 });
 
 const mapDispatchToProps = {
   logout,
-  setToggleLogin
+  setToggleLogin,
+  setNavTitle
 };
 
 export default withRouter(
