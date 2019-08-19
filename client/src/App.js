@@ -9,14 +9,14 @@ import store from "./store";
 
 import Navbar from "./components/layout/Navbar";
 import Landing from "./components/layout/Landing";
-import AddAdmin from "./components/auth/AddAdmin";
-import LoginAdmin from "./components/auth/LoginAdmin";
-import LoginUser from "./components/auth/LoginUser";
-import AddUser from "./components/auth/AddUser";
+// import AddAdmin from "./components/auth/AddAdmin";
+// import LoginAdmin from "./components/auth/LoginAdmin";
+// import LoginUser from "./components/auth/LoginUser";
+// import AddUser from "./components/auth/AddUser";
 import PrivateRoute from "./components/private-route/PrivateRoute";
-import Dashboard from "./components/dashboard/Dashboard";
-import Products from "./components/Products";
-import Users from "./components/Users";
+// import Dashboard from "./components/dashboard/Dashboard";
+// import Products from "./components/Products";
+// import Users from "./components/Users";
 import Page404 from "./components/layout/Page404";
 
 class App extends Component {
@@ -35,14 +35,14 @@ class App extends Component {
           <Navbar />
           <Switch>
             <Route exact path="/" component={Landing} />
-            <Route exact path="/add_admin" component={AddAdmin} />
-            <Route exact path="/add_user" component={AddUser} />
-            <Route exact path="/login_admin" component={LoginAdmin} />
-            <Route exact path="/login_user" component={LoginUser} />
-            <Route exact path="/products" component={Products} />
-            <Route exact path="/users" component={Users} />
+            <Route exact path="/add_admin" component={Landing} />
+            <Route exact path="/add_user" component={Landing} />
+            <Route exact path="/login_admin" component={Landing} />
+            <Route exact path="/login_user" component={Landing} />
+            <Route exact path="/products" component={Landing} />
+            <Route exact path="/users" component={Landing} />
             <Route component={Page404} />
-            <PrivateRoute exact path="/dashboard" component={Dashboard} />
+            <PrivateRoute exact path="/dashboard" component={Landing} />
           </Switch>
         </Router>
       </Provider>
