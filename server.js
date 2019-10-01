@@ -8,6 +8,7 @@ const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/user");
 const productRoutes = require("./routes/product");
 const reviewRoutes = require("./routes/review");
+const mongooseConfig = require("./config/mongooseConfig");
 const cors = require("cors");
 const port = process.env.PORT || 5000;
 const app = express();
@@ -26,7 +27,7 @@ app.use(bodyParser.json());
 const db = require("./config/keys").mongoURI;
 
 mongoose
-  .connect(db, { useNewUrlParser: true })
+  .connect(db, mongooseConfig)
   .then(() => {
     if (mongoose.connection.readyState !== 1)
       console.log("MongoDB disconnected");
