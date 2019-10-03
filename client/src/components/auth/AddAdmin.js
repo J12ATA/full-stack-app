@@ -18,13 +18,16 @@ class AddAdmin extends Component {
   }
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "Admin") {
+    if (
+      this.props.auth.isAuthenticated &&
+      localStorage.tokenOwner === "Admin"
+    ) {
       this.props.history.push("/admin_dashboard");
     }
   }
 
   componentDidUpdate(nextProps) {
-    if (nextProps.errors) {
+    if (Object.entries(nextProps.errors).length) {
       this.setState({ errors: nextProps.errors });
     }
   }
@@ -54,7 +57,7 @@ class AddAdmin extends Component {
         <div className="row">
           <div className="col s8 offset-s2">
             <Link to="/" className="btn-flat waves-effect">
-              <i className="material-icons left">keyboard_backspace</i> 
+              <i className="material-icons left">keyboard_backspace</i>
               Back to Home
             </Link>
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
@@ -62,7 +65,8 @@ class AddAdmin extends Component {
                 <b>Add Admin</b>
               </h4>
               <p className="grey-text text-darken-1">
-                Already have an Admin account? <Link to="/login_admin">Log in</Link>
+                Already have an Admin account?{" "}
+                <Link to="/login_admin">Log in</Link>
               </p>
             </div>
             <form noValidate onSubmit={this.onSubmit}>
@@ -155,4 +159,7 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { addAdmin })(withRouter(AddAdmin));
+export default connect(
+  mapStateToProps,
+  { addAdmin }
+)(withRouter(AddAdmin));

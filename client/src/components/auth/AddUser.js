@@ -25,7 +25,7 @@ class AddUser extends Component {
   }
 
   componentDidUpdate(nextProps) {
-    if (nextProps.errors) {
+    if (Object.entries(nextProps.errors).length) {
       this.setState({ errors: nextProps.errors });
     }
   }
@@ -55,7 +55,7 @@ class AddUser extends Component {
         <div className="row">
           <div className="col s8 offset-s2">
             <Link to="/" className="btn-flat waves-effect">
-              <i className="material-icons left">keyboard_backspace</i> 
+              <i className="material-icons left">keyboard_backspace</i>
               Back to Home
             </Link>
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
@@ -63,7 +63,8 @@ class AddUser extends Component {
                 <b>Add User</b>
               </h4>
               <p className="grey-text text-darken-1">
-                Already have a User account? <Link to="/login_user">Log in</Link>
+                Already have a User account?{" "}
+                <Link to="/login_user">Log in</Link>
               </p>
             </div>
             <form noValidate onSubmit={this.onSubmit}>
@@ -156,4 +157,7 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { addUser })(withRouter(AddUser));
+export default connect(
+  mapStateToProps,
+  { addUser }
+)(withRouter(AddUser));
