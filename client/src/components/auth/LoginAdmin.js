@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { loginAdmin } from "../../actions/authActions";
-
 import classnames from "classnames";
 
 class LoginAdmin extends Component {
@@ -21,13 +20,13 @@ class LoginAdmin extends Component {
       this.props.auth.isAuthenticated &&
       localStorage.tokenOwner === "Admin"
     ) {
-      this.props.history.push("/admin_dashboard");
+      this.props.history.push("/dashboard");
     }
   }
 
   componentDidUpdate(nextProps) {
     if (nextProps.auth.isAuthenticated && localStorage.tokenOwner === "Admin") {
-      this.props.history.push("/admin_dashboard");
+      this.props.history.push("/dashboard");
     }
 
     if (Object.entries(nextProps.errors).length) {

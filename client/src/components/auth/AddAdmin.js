@@ -22,7 +22,7 @@ class AddAdmin extends Component {
       this.props.auth.isAuthenticated &&
       localStorage.tokenOwner === "Admin"
     ) {
-      this.props.history.push("/admin_dashboard");
+      this.props.history.push("/dashboard");
     }
   }
 
