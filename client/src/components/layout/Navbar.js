@@ -114,7 +114,7 @@ class Navbar extends Component {
   };
 
   onDashboardClick = () => {
-    this.props.history.push("/admin_dashboard");
+    this.props.history.push("/dashboard");
     this.onDrawerClose();
   };
 
