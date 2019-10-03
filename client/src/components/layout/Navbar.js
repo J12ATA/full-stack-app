@@ -119,8 +119,12 @@ class Navbar extends Component {
   };
 
   onLoginClick = () => {
-    this.props.setToggleLogin(true);
     this.onDrawerClose();
+    this.toggleLoginDialog();
+  };
+
+  toggleLoginDialog = () => {
+    setTimeout(() => this.props.setToggleLogin(true), 250);
   };
 
   onLogoutClick = () => {
