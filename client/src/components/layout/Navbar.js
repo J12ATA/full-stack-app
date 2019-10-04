@@ -170,7 +170,7 @@ class Navbar extends Component {
                   <ListItem
                     key={name}
                     onClick={() => {
-                      if (name !== "Login" && name !== "logout")
+                      if (name !== "Login" && name !== "Logout")
                         handleNavTitle(name);
                       onNavBarItemClick(name);
                     }}
