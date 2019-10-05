@@ -2,35 +2,45 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { withRouter } from "react-router";
 import { loginAdmin } from "../../actions/authActions";
+import { setActiveNav } from "../../actions/navActions";
+import { setNavTitle } from "../../actions/titleActions";
 import classnames from "classnames";
 
 class LoginAdmin extends Component {
-  constructor() {
-    super();
-    this.state = {
-      email: "",
-      password: "",
-      errors: {}
-    };
-  }
+  state = {
+    email: "",
+    password: "",
+    errors: {}
+  };
 
   componentDidMount() {
     if (
       this.props.auth.isAuthenticated &&
       localStorage.tokenOwner === "Admin"
     ) {
+      this.props.setActiveNav("Dashboard");
+      this.props.setNavTitle("Dashboard");
       this.props.history.push("/dashboard");
     }
   }
 
-  componentDidUpdate(nextProps) {
-    if (nextProps.auth.isAuthenticated && localStorage.tokenOwner === "Admin") {
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.auth.isAuthenticated !== this.props.auth.isAuthenticated &&
+      localStorage.tokenOwner === "Admin"
+    ) {
+      this.props.setActiveNav("Dashboard");
+      this.props.setNavTitle("Dashboard");
       this.props.history.push("/dashboard");
     }
 
-    if (Object.entries(nextProps.errors).length) {
-      this.setState({ errors: nextProps.errors });
+    if (
+      Object.entries(prevProps.errors).length !==
+      Object.entries(this.props.errors).length
+    ) {
+      this.setState({ errors: this.props.errors });
     }
   }
 
@@ -137,7 +147,15 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(
-  mapStateToProps,
-  { loginAdmin }
-)(LoginAdmin);
+const mapDispatchToProps = {
+  loginAdmin,
+  setActiveNav,
+  setNavTitle
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(LoginAdmin)
+);

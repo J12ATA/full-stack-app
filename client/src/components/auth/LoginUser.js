@@ -2,20 +2,42 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { withRouter } from "react-router";
 import { loginUser } from "../../actions/authActions";
+import { setActiveNav } from "../../actions/navActions";
+import { setNavTitle } from "../../actions/titleActions";
 import classnames from "classnames";
 
 class LoginUser extends Component {
-  constructor() {
-    super();
-    this.state = {
-      email: "",
-      password: ""
-    };
-  }
+  state = {
+    email: "",
+    password: "",
+    errors: {}
+  };
+
   componentDidMount() {
     if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
+      this.props.setActiveNav("Products");
+      this.props.setNavTitle("Products");
       this.props.history.push("/products");
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.auth.isAuthenticated !== this.props.auth.isAuthenticated &&
+      localStorage.tokenOwner === "User"
+    ) {
+      this.props.setActiveNav("Products");
+      this.props.setNavTitle("Products");
+      this.props.history.push("/products");
+    }
+
+    if (
+      Object.entries(prevProps.errors).length !==
+      Object.entries(this.props.errors).length
+    ) {
+      this.setState({ errors: this.props.errors });
     }
   }
 
@@ -26,16 +48,16 @@ class LoginUser extends Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const loginData = {
+    const userData = {
       email: this.state.email,
       password: this.state.password
     };
 
-    this.props.loginUser(loginData);
+    this.props.loginUser(userData);
   };
 
   render() {
-    const errors = this.props.errors || {};
+    const { errors } = this.state;
 
     return (
       <div className="container">
@@ -120,7 +142,15 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(
-  mapStateToProps,
-  { loginUser }
-)(LoginUser);
+const mapDispatchToProps = {
+  loginUser,
+  setActiveNav,
+  setNavTitle
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(LoginUser)
+);
