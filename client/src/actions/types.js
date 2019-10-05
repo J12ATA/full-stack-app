@@ -6,3 +6,4 @@ export const SET_USER_DATA = "SET_USER_DATA";
 export const SET_PRODUCT_DATA = "SET_PRODUCT_DATA";
 export const TOGGLE_LOGIN = "TOGGLE_LOGIN";
 export const SET_NAV_TITLE = "SET_NAV_TITLE";
+export const SET_ACTIVE_NAV = "SET_ACTIVE_NAV";
