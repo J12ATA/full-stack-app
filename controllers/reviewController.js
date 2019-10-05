@@ -14,7 +14,7 @@ exports.add_review = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
   const newReview = new Review(input);
   newReview.save().then(review => 
@@ -37,7 +37,7 @@ exports.get_review = async (req, res, next) => {
       const err = {};
       err.errors = { _id: `No review found with _id ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json(review);
     }
@@ -53,21 +53,21 @@ exports.update_review = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
   
   if (update._id) {
     const err = {};
     err.errors = { _id: "Update failed, cannot update field: _id" };
     err.status = 400;
-    next(err);
+    return next(err);
   } else {
     Review.findById(_id).then(review => {
       if (!review) {
         const err = {};
         err.errors = { _id: `Update failed, no review found with _id: ${_id}` };
         err.status = 400;
-        next(err);
+        return next(err);
       } else {
         const field1 = "reviews";
         const field2 = "reviewsCount";
@@ -115,7 +115,7 @@ exports.delete_review = async (req, res, next) => {
       const err = {};
       err.errors = { _id: `No review found with _id: ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json({
         message: "Success!",

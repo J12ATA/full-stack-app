@@ -18,7 +18,7 @@ exports.add_user = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
 
   const newUser = new User(input);
@@ -45,14 +45,15 @@ exports.login_user = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
+
   User.findOne({ email }).then(user => {
     if (!user) {
       const err = {};
       err.errors = { emailnotfound: "email not found" };
       err.status = 404;
-      next(err);
+      return next(err);
     } else {
       bcrypt.compare(password, user.password).then(isMatch => {
         if (isMatch) {
@@ -69,7 +70,7 @@ exports.login_user = async (req, res, next) => {
           const err = {};
           err.errors = { passwordincorrect: "incorrect password" };
           err.status = 400;
-          next(err);
+          return next(err);
         }
       }).catch(err => next(err));
     }
@@ -97,7 +98,7 @@ exports.get_user = async (req, res, next) => {
       const err = {};
       err.errors = { _id: `No user found with _id ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json(user);
     }
@@ -114,14 +115,14 @@ exports.update_user = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
 
   if (update._id) {
     const err = {};
     err.errors = { _id: `Update failed: cannot update field: _id` };
     err.status = 400;
-    next(err);
+    return next(err);
   } else {
     if (update.password) {
       delete update.password2;
@@ -139,7 +140,7 @@ exports.update_user = async (req, res, next) => {
         const err = {};
         err.errors = { _id: `Update failed, no review found with _id: ${_id}` };
         err.status = 400;
-        next(err);
+        return next(err);
       } else {
         res.status(200).json({ message: "Success!" })
       }
@@ -154,7 +155,7 @@ exports.delete_user = async (req, res, next) => {
       const err = {};
       err.errors = { _id: `No user found with _id: ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json({
         message: "Success!",

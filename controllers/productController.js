@@ -15,7 +15,7 @@ exports.add_product = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
   
   const newProduct = new Product(input);
@@ -43,7 +43,7 @@ exports.get_product = async (req, res, next) => {
       const err = {};
       err.errors = { _id: `No product found with _id ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json(product);
     }
@@ -59,20 +59,20 @@ exports.update_product = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
   if (update._id) {
     const err = {};
     err.errors = { _id: "Update failed, cannot update field: _id" };
     err.status = 400;
-    next(err);
+    return next(err);
   } else {
     Product.findByIdAndUpdate(_id, update).then(updated => {
       if (!updated) {
         const err = {};
         err.errors = { _id: `Update failed, no review found with _id: ${_id}` };
         err.status = 400;
-        next(err);
+        return next(err);
       } else {
         res.status(200).json({ message: "Success!" })
       }
@@ -87,7 +87,7 @@ exports.delete_product = async (req, res, next) => {
       const err = {};
       err.errors = { _id: `No product found with _id: ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json({
         message: "Success!",

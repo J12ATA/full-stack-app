@@ -20,7 +20,7 @@ exports.add_admin = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
 
   Admin.find({}).then(admins => {
@@ -28,7 +28,7 @@ exports.add_admin = async (req, res, next) => {
       const err = {};
       err.errors = { email: "an admin already exists" };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       delete input.password2;
       const newAdmin = new Admin(input);
@@ -56,7 +56,7 @@ exports.login_admin = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
   
   Admin.findOne({ email }).then(admin => {
@@ -64,7 +64,7 @@ exports.login_admin = async (req, res, next) => {
       const err = {};
       err.errors = { emailnotfound: "email not found" };
       err.status = 404;
-      next(err);
+      return next(err);
     } else {
       bcrypt.compare(password, admin.password).then(isMatch => {
         if (isMatch) {
@@ -81,7 +81,7 @@ exports.login_admin = async (req, res, next) => {
           const err = {};
           err.errors = { passwordincorrect: "incorrect password" };
           err.status = 400;
-          next(err);
+          return next(err);
         }
       }).catch(err => next(err));
     }
@@ -103,7 +103,7 @@ exports.get_admin = async (req, res, next) => {
       const err = {};
       err.errros = { error: `No admin found with _id ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json(admin);
     }
@@ -120,14 +120,14 @@ exports.update_admin = async (req, res, next) => {
     const err = {};
     err.errors = errors;
     err.status = 400;
-    next(err);
+    return next(err);
   }
 
   if (update._id) {
     const err = {};
     err.errors = { _id: "Update failed: cannot update field: _id" };
     err.status = 400;
-    next(err);
+    return next(err);
   } else {
     if (update.password) {
       delete update.password2;
@@ -145,7 +145,7 @@ exports.update_admin = async (req, res, next) => {
         const err = {};
         err.errors = { _id: `Update failed, no review found with _id: ${_id}` };
         err.status = 400;
-        next(err);
+        return next(err);
       } else {
         res.status(200).json({ message: "Success!" })
       }
@@ -160,7 +160,7 @@ exports.delete_admin = async (req, res, next) => {
       const err = {};
       err.errors = { _id: `No admin found with _id: ${_id}` };
       err.status = 400;
-      next(err);
+      return next(err);
     } else {
       res.status(200).json({
         message: "Success!",
