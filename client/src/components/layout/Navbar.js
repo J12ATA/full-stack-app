@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 import LoginDialog from "../auth/LoginDialog";
 import { logout, setToggleLogin } from "../../actions/authActions";
 import { setNavTitle } from "../../actions/titleActions";
+import { setActiveNav } from "../../actions/navActions";
 import MaterialIcon from "@material/react-material-icon";
 import Drawer, {
   DrawerAppContent,
@@ -65,7 +66,6 @@ const NAVBAR_LIST = [
 
 class Navbar extends Component {
   state = {
-    activeListItem: "",
     isDrawerOpen: false
   };
 
@@ -74,8 +74,8 @@ class Navbar extends Component {
   }
 
   handleNavTitle = name => {
-    this.setState({ activeListItem: name });
-    return name ? this.props.setNavTitle(name) : "Welcome";
+    if (name) this.props.setActiveNav(name);
+    this.props.setNavTitle(name || "Welcome");
   };
 
   onDrawerClose = () => {
@@ -129,12 +129,14 @@ class Navbar extends Component {
 
   onLogoutClick = () => {
     this.props.logout(localStorage.tokenOwner);
+    this.props.setActiveNav("");
+    this.props.setNavTitle("Welcome");
+    this.props.history.push("/");
     this.onDrawerClose();
   };
 
   render() {
     const { admin, user, isAuthenticated } = this.props.auth;
-    const { isDrawerOpen, activeListItem } = this.state;
     const {
       onDrawerClose,
       onNavBarItemClick,
@@ -142,6 +144,8 @@ class Navbar extends Component {
       handleNavTitle
     } = this;
     const { title } = this.props.title;
+    const { navItem } = this.props.navItem;
+    const { isDrawerOpen } = this.state;
     let navList;
 
     if (!isAuthenticated) {
@@ -174,7 +178,7 @@ class Navbar extends Component {
                         handleNavTitle(name);
                       onNavBarItemClick(name);
                     }}
-                    activated={activeListItem === name}
+                    activated={navItem === name}
                   >
                     <ListItemGraphic
                       graphic={
@@ -219,13 +223,15 @@ Navbar.propTypes = {
 
 const mapStateToProps = state => ({
   auth: state.auth,
-  title: state.title
+  title: state.title,
+  navItem: state.navItem
 });
 
 const mapDispatchToProps = {
   logout,
   setToggleLogin,
-  setNavTitle
+  setNavTitle,
+  setActiveNav
 };
 
 export default withRouter(
