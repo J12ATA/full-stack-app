@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
-import { loginUser } from "../../actions/authActions";
+import { loginUser, logout } from "../../actions/authActions";
 import { setActiveNav } from "../../actions/navActions";
 import { setNavTitle } from "../../actions/titleActions";
 import classnames from "classnames";
@@ -16,11 +16,19 @@ class LoginUser extends Component {
   };
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
+    if (
+      this.props.auth.isAuthenticated &&
+      localStorage.tokenOwner === "User"
+    ) {
       this.props.setActiveNav("Products");
       this.props.setNavTitle("Products");
       this.props.history.push("/products");
+    } else if (!this.props.auth.isAuthenticated && localStorage.tokenOwner) {
+      this.props.logout(localStorage.tokenOwner);
     }
+    
+    this.props.setActiveNav("");
+    this.props.setNavTitle("Welcome");
   }
 
   componentDidUpdate(prevProps) {
@@ -145,7 +153,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = {
   loginUser,
   setActiveNav,
-  setNavTitle
+  setNavTitle,
+  logout
 };
 
 export default withRouter(
