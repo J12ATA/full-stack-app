@@ -1,9 +1,10 @@
 module.exports = {
+  parser: 'babel-eslint',
   env: {
     browser: true,
     es6: true
   },
-  extends: ['google'],
+  extends: ['airbnb'],
   globals: {
     Atomics: 'readonly',
     SharedArrayBuffer: 'readonly'
@@ -16,5 +17,5 @@ module.exports = {
     sourceType: 'module'
   },
   plugins: ['react'],
-  rules: {}
+  rules: { 'react/state-in-constructor': [1, 'never'] }
 };

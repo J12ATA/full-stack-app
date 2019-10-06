@@ -11,10 +11,10 @@ const store = createStore(
   initialState,
   compose(
     applyMiddleware(...middleware),
-    (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
-      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__()) ||
-      compose
-  )
+    (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+      && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__())
+      || compose,
+  ),
 );
 
 export default store;

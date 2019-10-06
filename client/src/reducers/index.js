@@ -10,5 +10,5 @@ export default combineReducers({
   errors: errorReducer,
   users: userReducer,
   title: titleReducer,
-  navItem: navReducer
+  navItem: navReducer,
 });

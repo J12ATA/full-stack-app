@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import 'normalize.css';
 import './app.scss';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+// eslint-disable-next-line camelcase
 import jwt_decode from 'jwt-decode';
-import { logout } from './actions/authActions';
 import { Provider } from 'react-redux';
+import { logout } from './actions/authActions';
 import store from './store';
 
 import Navbar from './components/layout/Navbar';

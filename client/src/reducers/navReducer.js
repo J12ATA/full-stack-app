@@ -1,11 +1,13 @@
 import { SET_ACTIVE_NAV } from '../actions/types';
 
 const initialState = {
-  navItem: ''
+  navItem: '',
 };
 
 export default (state = initialState, action) => {
-  return action.type === SET_ACTIVE_NAV
-    ? { ...state, navItem: action.navItem }
+  const { type, navItem } = action;
+
+  return type === SET_ACTIVE_NAV
+    ? { ...state, navItem }
     : state;
 };

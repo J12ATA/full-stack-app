@@ -1,11 +1,13 @@
 import { SET_NAV_TITLE } from '../actions/types';
 
 const initialState = {
-  title: 'Welcome'
+  title: 'Welcome',
 };
 
 export default (state = initialState, action) => {
-  return action.type === SET_NAV_TITLE
-    ? { ...state, title: action.title }
+  const { type, title } = action;
+
+  return type === SET_NAV_TITLE
+    ? { ...state, title }
     : state;
 };

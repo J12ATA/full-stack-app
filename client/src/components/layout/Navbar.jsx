@@ -2,47 +2,47 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
-import LoginDialog from '../auth/LoginDialog';
-import { logout, setToggleLogin } from '../../actions/authActions';
-import { setNavTitle } from '../../actions/titleActions';
-import { setActiveNav } from '../../actions/navActions';
 import MaterialIcon from '@material/react-material-icon';
 import Drawer, {
   DrawerAppContent,
   DrawerContent,
   DrawerHeader,
-  DrawerTitle
+  DrawerTitle,
 } from '@material/react-drawer';
 import List, {
   ListItem,
   ListDivider,
   ListItemGraphic,
-  ListItemText
+  ListItemText,
 } from '@material/react-list';
 import TopAppBar, {
   TopAppBarFixedAdjust,
   TopAppBarIcon,
   TopAppBarRow,
   TopAppBarSection,
-  TopAppBarTitle
+  TopAppBarTitle,
 } from '@material/react-top-app-bar';
+import LoginDialog from '../auth/LoginDialog';
+import { logout, setToggleLogin } from '../../actions/authActions';
+import setNavTitle from '../../actions/titleActions';
+import setActiveNav from '../../actions/navActions';
 
 const startList = [
   {
     name: 'Products',
-    graphic: { iconName: 'shopping_cart', label: 'products' }
+    graphic: { iconName: 'shopping_cart', label: 'products' },
   },
   {
     name: 'Users',
-    graphic: { iconName: 'people', label: 'users' }
-  }
+    graphic: { iconName: 'people', label: 'users' },
+  },
 ];
 
 const endList = [
   {
     name: 'Logout',
-    graphic: { iconName: 'exit_to_app', label: 'logout' }
-  }
+    graphic: { iconName: 'exit_to_app', label: 'logout' },
+  },
 ];
 
 const USER_NAVBAR_LIST = [...startList, ...endList];
@@ -51,31 +51,33 @@ const ADMIN_NAVBAR_LIST = [
   ...startList,
   {
     name: 'Dashboard',
-    graphic: { iconName: 'dashboard', label: 'dashboard' }
+    graphic: { iconName: 'dashboard', label: 'dashboard' },
   },
-  ...endList
+  ...endList,
 ];
 
 const NAVBAR_LIST = [
   ...startList,
   {
     name: 'Login',
-    graphic: { iconName: 'vpn_key', label: 'login' }
-  }
+    graphic: { iconName: 'vpn_key', label: 'login' },
+  },
 ];
 
 class Navbar extends Component {
   state = {
-    isDrawerOpen: false
+    isDrawerOpen: false,
   };
 
   componentDidMount() {
     this.handleNavTitle();
   }
 
-  handleNavTitle = name => {
-    if (name) this.props.setActiveNav(name);
-    this.props.setNavTitle(name || 'Welcome');
+  handleNavTitle = (name) => {
+    const { activeNav, navTitle } = this.props;
+
+    if (name) activeNav(name);
+    navTitle(name || 'Welcome');
   };
 
   onDrawerClose = () => {
@@ -86,7 +88,7 @@ class Navbar extends Component {
     this.setState({ isDrawerOpen: true });
   };
 
-  onNavBarItemClick = name => {
+  onNavBarItemClick = (name) => {
     switch (name) {
       case 'Products':
         return this.onProductsClick();
@@ -104,57 +106,74 @@ class Navbar extends Component {
   };
 
   onProductsClick = () => {
-    this.props.history.push('/products');
-    this.onDrawerClose();
+    const { history } = this.props;
+    const { onDrawerClose } = this;
+
+    history.push('/products');
+    onDrawerClose();
   };
 
   onUsersClick = () => {
-    this.props.history.push('/users');
-    this.onDrawerClose();
+    const { history } = this.props;
+    const { onDrawerClose } = this;
+
+    history.push('/users');
+    onDrawerClose();
   };
 
   onDashboardClick = () => {
-    this.props.history.push('/dashboard');
-    this.onDrawerClose();
+    const { history } = this.props;
+    const { onDrawerClose } = this;
+
+    history.push('/dashboard');
+    onDrawerClose();
   };
 
   onLoginClick = () => {
-    this.onDrawerClose();
-    this.toggleLoginDialog();
+    const { onDrawerClose, toggleLoginDialog } = this;
+
+    onDrawerClose();
+    toggleLoginDialog();
   };
 
   toggleLoginDialog = () => {
-    setTimeout(() => this.props.setToggleLogin(true), 250);
+    const { isLogin } = this.props;
+
+    setTimeout(() => isLogin(true), 250);
   };
 
   onLogoutClick = () => {
-    this.props.logout(localStorage.tokenOwner);
-    this.props.setActiveNav('');
-    this.props.setNavTitle('Welcome');
-    this.props.history.push('/');
-    this.onDrawerClose();
+    const { tokenOwner } = localStorage;
+    const { onDrawerClose } = this;
+    const {
+      resetAuth, activeNav, navTitle, history,
+    } = this.props;
+
+    resetAuth(tokenOwner);
+    activeNav('');
+    navTitle('Welcome');
+    history.push('/');
+    onDrawerClose();
   };
 
   render() {
-    const { admin, user, isAuthenticated } = this.props.auth;
+    const { auth, title, navItem } = this.props;
+    const { admin, user, isAuthenticated } = auth;
     const {
       onDrawerClose,
       onNavBarItemClick,
       onMenuClick,
-      handleNavTitle
+      handleNavTitle,
     } = this;
-    const { title } = this.props.title;
-    const { navItem } = this.props.navItem;
     const { isDrawerOpen } = this.state;
     let navList;
 
     if (!isAuthenticated) {
       navList = NAVBAR_LIST;
     } else {
-      navList =
-        localStorage.tokenOwner === 'User'
-          ? USER_NAVBAR_LIST
-          : ADMIN_NAVBAR_LIST;
+      navList = localStorage.tokenOwner === 'User'
+        ? USER_NAVBAR_LIST
+        : ADMIN_NAVBAR_LIST;
     }
 
     return (
@@ -174,8 +193,7 @@ class Navbar extends Component {
                   <ListItem
                     key={name}
                     onClick={() => {
-                      if (name !== 'Login' && name !== 'Logout')
-                        handleNavTitle(name);
+                      if (name !== 'Login' && name !== 'Logout') { handleNavTitle(name); }
                       onNavBarItemClick(name);
                     }}
                     activated={navItem === name}
@@ -217,26 +235,37 @@ class Navbar extends Component {
 }
 
 Navbar.propTypes = {
-  logout: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired
+  resetAuth: PropTypes.func.isRequired,
+  isLogin: PropTypes.func.isRequired,
+  activeNav: PropTypes.func.isRequired,
+  navTitle: PropTypes.func.isRequired,
+  history: PropTypes.shape({ push: PropTypes.func.isRequired }).isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    isOpen: PropTypes.bool,
+    admin: PropTypes.object,
+    user: PropTypes.object,
+  }).isRequired,
+  title: PropTypes.string.isRequired,
+  navItem: PropTypes.string.isRequired,
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth,
-  title: state.title,
-  navItem: state.navItem
+const mapStateToProps = ({ auth, title, navItem }) => ({
+  auth,
+  title: title.title,
+  navItem: navItem.navItem,
 });
 
 const mapDispatchToProps = {
-  logout,
-  setToggleLogin,
-  setNavTitle,
-  setActiveNav
+  resetAuth: logout,
+  isLogin: setToggleLogin,
+  navTitle: setNavTitle,
+  activeNav: setActiveNav,
 };
 
 export default withRouter(
   connect(
     mapStateToProps,
-    mapDispatchToProps
-  )(Navbar)
+    mapDispatchToProps,
+  )(Navbar),
 );

@@ -2,11 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import { addUser } from '../../actions/authActions';
-import { setActiveNav } from '../../actions/navActions';
-import { setNavTitle } from '../../actions/titleActions';
 import TextField, { HelperText, Input } from '@material/react-text-field';
 import Button from '@material/react-button';
+import { addUser, logout } from '../../actions/authActions';
+import setActiveNav from '../../actions/navActions';
+import setNavTitle from '../../actions/titleActions';
 
 class AddUser extends Component {
   state = {
@@ -14,56 +14,72 @@ class AddUser extends Component {
     email: '',
     password: '',
     password2: '',
-    errors: {}
+    errors: {},
   };
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === 'User') {
-      this.props.setActiveNav('Products');
-      this.props.setNavTitle('Products');
-      this.props.history.push('/products');
-    } else if (!this.props.auth.isAuthenticated && localStorage.tokenOwner) {
-      this.props.logout(localStorage.tokenOwner);
+    const { tokenOwner } = localStorage;
+    const {
+      auth, activeNav, navTitle, history, resetAuth,
+    } = this.props;
+
+    if (auth.isAuthenticated && tokenOwner === 'User') {
+      activeNav('Products');
+      navTitle('Products');
+      history.push('/products');
+    } else if (!auth.isAuthenticated && tokenOwner) {
+      resetAuth(tokenOwner);
     }
 
-    this.props.setActiveNav('');
-    this.props.setNavTitle('Welcome');
+    activeNav('');
+    navTitle('Welcome');
   }
 
   componentDidUpdate(prevProps) {
-    if (
-      prevProps.auth.isAuthenticated !== this.props.auth.isAuthenticated &&
-      localStorage.tokenOwner === 'User'
-    ) {
-      this.props.setActiveNav('Products');
-      this.props.setNavTitle('Products');
-      this.props.history.push('/products');
+    const { tokenOwner } = localStorage;
+    const { setErrors } = this;
+    const {
+      auth, activeNav, navTitle, history, errors,
+    } = this.props;
+
+    if (!Object.is(prevProps.auth, auth) && tokenOwner === 'User') {
+      activeNav('Products');
+      navTitle('Products');
+      history.push('/products');
     }
 
-    if (!Object.is(prevProps.errors, this.props.errors)) {
-      this.setState({ errors: this.props.errors });
+    if (!Object.is(prevProps.errors, errors)) {
+      setErrors(errors);
     }
   }
 
-  onChange = e => {
+  setErrors = (errors) => {
+    this.setState({ errors });
+  };
+
+  onChange = (e) => {
     this.setState({ [e.target.id]: e.target.value });
   };
 
-  onSubmit = e => {
+  onSubmit = (e) => {
     e.preventDefault();
 
+    const { newUser, history } = this.props;
+    const {
+      name, email, password, password2,
+    } = this.state;
+
     const userData = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-      password2: this.state.password2
+      name, email, password, password2,
     };
 
-    this.props.addUser(userData, this.props.history);
+    newUser(userData, history);
   };
 
   render() {
-    const { errors, password, password2, email, name } = this.state;
+    const {
+      errors, password, password2, email, name,
+    } = this.state;
     const { onSubmit, onChange } = this;
 
     return (
@@ -81,7 +97,7 @@ class AddUser extends Component {
                   onChange={onChange}
                   id="name"
                   type="text"
-                  isValid={!errors.hasOwnProperty('name')}
+                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'name')}
                 />
               </TextField>
             </div>
@@ -95,7 +111,7 @@ class AddUser extends Component {
                   onChange={onChange}
                   id="email"
                   type="email"
-                  isValid={!errors.hasOwnProperty('email')}
+                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'email')}
                 />
               </TextField>
             </div>
@@ -109,7 +125,7 @@ class AddUser extends Component {
                   onChange={onChange}
                   id="password"
                   type="password"
-                  isValid={!errors.hasOwnProperty('password')}
+                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'password')}
                 />
               </TextField>
             </div>
@@ -123,7 +139,7 @@ class AddUser extends Component {
                   onChange={onChange}
                   id="password2"
                   type="password"
-                  isValid={!errors.hasOwnProperty('password2')}
+                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'password2')}
                 />
               </TextField>
             </div>
@@ -138,25 +154,32 @@ class AddUser extends Component {
 }
 
 AddUser.propTypes = {
-  addUser: PropTypes.func.isRequired,
-  auth: PropTypes.object.isRequired,
-  errors: PropTypes.object.isRequired
+  newUser: PropTypes.func.isRequired,
+  resetAuth: PropTypes.func.isRequired,
+  activeNav: PropTypes.func.isRequired,
+  navTitle: PropTypes.func.isRequired,
+  history: PropTypes.shape({ push: PropTypes.func.isRequired }).isRequired,
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    isOpen: PropTypes.bool,
+    admin: PropTypes.object,
+    user: PropTypes.object,
+  }).isRequired,
+  errors: PropTypes.shape({}).isRequired,
 };
 
-const mapStateToProps = state => ({
-  auth: state.auth,
-  errors: state.errors
-});
+const mapStateToProps = ({ auth, errors }) => ({ auth, errors });
 
 const mapDispatchToProps = {
-  addUser,
-  setActiveNav,
-  setNavTitle
+  newUser: addUser,
+  resetAuth: logout,
+  activeNav: setActiveNav,
+  navTitle: setNavTitle,
 };
 
 export default withRouter(
   connect(
     mapStateToProps,
-    mapDispatchToProps
-  )(AddUser)
+    mapDispatchToProps,
+  )(AddUser),
 );

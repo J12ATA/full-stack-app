@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import MaterialTable from 'material-table';
 import { userData } from '../../actions/userActions';
 import { createNewUser, deleteUser, updateUser } from '../../utils/api';
-import MaterialTable from 'material-table';
-import LoadingDashboard from './loadingDashboard';
 
 class AdminDashboard extends Component {
   state = {
@@ -15,61 +14,70 @@ class AdminDashboard extends Component {
         title: 'Reviews',
         field: 'reviewCount',
         editable: 'never',
-        hidden: false
+        hidden: false,
       },
       { title: 'Password', field: 'password', hidden: true },
-      { title: 'Confirm Password', field: 'password2', hidden: true }
-    ]
+      { title: 'Confirm Password', field: 'password2', hidden: true },
+    ],
   };
 
   componentDidMount() {
-    this.props.loadUserData();
+    const { loadUserData } = this.props;
+
+    loadUserData();
   }
 
   columnsHidden = () => {
-    const columns = [...this.state.columns];
+    const columns = [...this.state];
     columns[2].hidden = true;
     columns[3].hidden = false;
     columns[4].hidden = false;
-    this.setState({ columns });
+    this.setState(() => ({ columns }));
   };
 
   columnsReset = () => {
-    const columns = [...this.state.columns];
+    const columns = [...this.state];
     columns[2].hidden = false;
     columns[3].hidden = true;
     columns[4].hidden = true;
-    this.setState({ columns });
+    this.setState(() => ({ columns }));
   };
 
-  addNewUser = async user => {
-    this.columnsHidden();
+  addNewUser = async (user) => {
+    const { loadUserData } = this.props;
+    const { columnsHidden, columnsReset } = this;
+
+    columnsHidden();
     await createNewUser({ ...user });
-    this.columnsReset();
-    this.props.loadUserData();
+    columnsReset();
+    loadUserData();
     Promise.resolve();
   };
 
-  updateUser = async user => {
-    this.columnsHidden();
+  updateUserData = async (user) => {
+    const { loadUserData } = this.props;
+    const { columnsHidden, columnsReset } = this;
+
+    columnsHidden();
     await updateUser(user);
-    this.columnsReset();
-    this.props.loadUserData();
+    columnsReset();
+    loadUserData();
     Promise.resolve();
   };
 
-  deleteUser = async user => {
+  removeUser = async (user) => {
+    const { loadUserData } = this.props;
+
     await deleteUser(user.id);
-    this.props.loadUserData();
+    loadUserData();
     Promise.resolve();
   };
 
   render() {
     const { users } = this.props;
     const { columns } = this.state;
-    const { addNewUser, updateUser, deleteUser } = this;
-
-    if (this.props.loading) return <LoadingDashboard />;
+    const { columnsReset } = this;
+    const { addNewUser, updateUserData, removeUser } = this;
 
     return (
       <div className="admin-table">
@@ -79,24 +87,27 @@ class AdminDashboard extends Component {
           data={users}
           editable={{
             onRowAdd: addNewUser,
-            onRowUpdate: updateUser,
-            onRowDelete: deleteUser
+            onRowUpdate: updateUserData,
+            onRowDelete: removeUser,
           }}
           options={{
             pageSizeOptions: [5],
             showFirstLastPageButtons: false,
-            emptyRowsWhenPaging: false
+            emptyRowsWhenPaging: false,
           }}
           localization={{
-            body: { editRow: { deleteText: 'Delete this user?' } }
+            body: { editRow: { deleteText: 'Delete this user?' } },
           }}
-          tableRef={props => {
-            if (props && this.state.modifiedHook !== true) {
-              let cancel = props.onEditingCanceled;
-              props.onEditingCanceled = (mode, props) => {
-                this.columnsReset();
+          tableRef={(props) => {
+            const { modifiedHook } = this.state;
+
+            if (props && modifiedHook !== true) {
+              const cancel = props.onEditingCanceled;
+              // eslint-disable-next-line no-param-reassign
+              props.onEditingCanceled = (mode, editProps) => {
+                columnsReset();
                 this.setState({ error: {}, modifiedHook: true });
-                cancel(mode, props);
+                cancel(mode, editProps);
               };
             }
           }}
@@ -108,34 +119,40 @@ class AdminDashboard extends Component {
 
 AdminDashboard.propTypes = {
   loadUserData: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
   users: PropTypes.array.isRequired,
-  auth: PropTypes.object.isRequired
+  auth: PropTypes.shape({
+    isAuthenticated: PropTypes.bool,
+    isOpen: PropTypes.bool,
+    admin: PropTypes.object,
+    user: PropTypes.object,
+  }).isRequired,
 };
 
 const mapStateToProps = ({ users: userStore, auth }) => {
   if (!userStore.users.length) {
     return {
-      loading: true,
       auth: {},
-      users: []
+      users: [],
     };
   }
 
-  const normalizedUsers = userStore.users.map(user => ({
+  const normalizedUsers = userStore.users.map((user) => ({
+    // eslint-disable-next-line no-underscore-dangle
     id: user._id,
     name: user.name,
     email: user.email,
-    reviewCount: user.reviewsCount
+    reviewCount: user.reviewsCount,
   }));
 
-  return { loading: false, auth, users: normalizedUsers };
+  return { auth, users: normalizedUsers };
 };
 
-const mapDispatchToProps = dispatch => ({
-  loadUserData: () => dispatch(userData())
-});
+const mapDispatchToProps = {
+  loadUserData: userData,
+};
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(AdminDashboard);
