@@ -6,34 +6,40 @@ import { createNewUser, deleteUser, updateUser } from "../../utils/api";
 import MaterialTable from "material-table";
 import LoadingDashboard from "./loadingDashboard";
 
-const COLUMNS = [
-  { title: "Name", field: "name" },
-  { title: "Email", field: "email" },
-  { title: "Reviews", field: "reviewCount", editable: "never", hidden: false },
-  { title: "Password", field: "password", hidden: true },
-  { title: "Confirm Password", field: "password2", hidden: true }
-];
-
 class AdminDashboard extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+  state = {
+    columns: [
+      { title: "Name", field: "name" },
+      { title: "Email", field: "email" },
+      {
+        title: "Reviews",
+        field: "reviewCount",
+        editable: "never",
+        hidden: false
+      },
+      { title: "Password", field: "password", hidden: true },
+      { title: "Confirm Password", field: "password2", hidden: true }
+    ]
+  };
 
   componentDidMount() {
     this.props.loadUserData();
   }
 
   columnsHidden = () => {
-    COLUMNS[2].hidden = true;
-    COLUMNS[3].hidden = false;
-    COLUMNS[4].hidden = false;
+    const columns = [...this.state.columns];
+    columns[2].hidden = true;
+    columns[3].hidden = false;
+    columns[4].hidden = false;
+    this.setState({ columns });
   };
 
   columnsReset = () => {
-    COLUMNS[2].hidden = false;
-    COLUMNS[3].hidden = true;
-    COLUMNS[4].hidden = true;
+    const columns = [...this.state.columns];
+    columns[2].hidden = false;
+    columns[3].hidden = true;
+    columns[4].hidden = true;
+    this.setState({ columns });
   };
 
   addNewUser = async user => {
@@ -41,25 +47,26 @@ class AdminDashboard extends Component {
     await createNewUser({ ...user });
     this.columnsReset();
     this.props.loadUserData();
-    return Promise.resolve();
+    Promise.resolve();
   };
 
   updateUser = async user => {
     this.columnsHidden();
     await updateUser(user);
-    this.props.loadUserData();
     this.columnsReset();
-    return Promise.resolve();
+    this.props.loadUserData();
+    Promise.resolve();
   };
 
   deleteUser = async user => {
     await deleteUser(user.id);
     this.props.loadUserData();
-    return Promise.resolve();
+    Promise.resolve();
   };
 
   render() {
     const { users } = this.props;
+    const { columns } = this.state;
     const { addNewUser, updateUser, deleteUser } = this;
 
     if (this.props.loading) return <LoadingDashboard />;
@@ -68,7 +75,7 @@ class AdminDashboard extends Component {
       <div className="admin-table">
         <MaterialTable
           title="USERS"
-          columns={COLUMNS}
+          columns={columns}
           data={users}
           editable={{
             onRowAdd: addNewUser,
