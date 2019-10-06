@@ -1,4 +1,5 @@
-'use strict';
+/* eslint-disable no-param-reassign */
+
 
 const Validator = require('validator');
 const isEmpty = require('is-empty');
@@ -17,18 +18,16 @@ module.exports = function validateAddProductInput(data) {
   if (Validator.isEmpty(data.description)) {
     errors.description = 'description field is required';
   } else if (
-    !Validator.isLength(data.description, {min: 10, max: undefined})
+    !Validator.isLength(data.description, { min: 10, max: undefined })
   ) {
     errors.description = 'description must be at least 10 characters';
   }
 
   if (Validator.isEmpty(data.price)) {
     errors.price = 'price field is required';
-  } else {
-    if (!Validator.isCurrency(data.price)) {
-      errors.price = 'valid price format: $2.99';
-    }
+  } else if (!Validator.isCurrency(data.price)) {
+    errors.price = 'valid price format: $2.99';
   }
 
-  return {errors, isValid: isEmpty(errors)};
+  return { errors, isValid: isEmpty(errors) };
 };

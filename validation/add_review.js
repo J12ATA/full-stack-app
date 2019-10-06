@@ -1,4 +1,5 @@
-'use strict';
+/* eslint-disable no-param-reassign */
+
 
 const Validator = require('validator');
 const isEmpty = require('is-empty');
@@ -18,14 +19,14 @@ module.exports = function validateAddReviewInput(data) {
 
   if (Validator.isEmpty(data.rating)) {
     errors.rating = 'rating field is required';
-  } else if (!Validator.isInt(data.rating, {gt: 0, lt: 6})) {
+  } else if (!Validator.isInt(data.rating, { gt: 0, lt: 6 })) {
     errors.rating = 'rating must be within range 1-5';
   }
 
   if (Validator.isEmpty(data.description)) {
     errors.description = 'description field is required';
   } else if (
-    !Validator.isLength(data.description, {min: 10, max: undefined})
+    !Validator.isLength(data.description, { min: 10, max: undefined })
   ) {
     errors.description = 'description must be at least 10 characters';
   }
@@ -35,8 +36,8 @@ module.exports = function validateAddReviewInput(data) {
   }
 
   if (Validator.isEmpty(data.authorId)) {
-    error.authorId = 'authorId field is required';
+    errors.authorId = 'authorId field is required';
   }
 
-  return {errors, isValid: isEmpty(errors)};
+  return { errors, isValid: isEmpty(errors) };
 };

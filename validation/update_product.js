@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-param-reassign */
 
 const Validator = require('validator');
 const isEmpty = require('is-empty');
@@ -16,10 +16,10 @@ module.exports = function validateUpdateProductInput(data) {
   }
 
   if (!Validator.isEmpty(data.description)) {
-    if (!Validator.isLength(data.description, {min: 10, max: undefined})) {
+    if (!Validator.isLength(data.description, { min: 10, max: undefined })) {
       errors.description = 'description must be at least 10 characters';
     }
   }
 
-  return {errors, isValid: isEmpty(errors)};
+  return { errors, isValid: isEmpty(errors) };
 };

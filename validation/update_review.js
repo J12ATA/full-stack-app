@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-param-reassign */
 
 const Validator = require('validator');
 const isEmpty = require('is-empty');
@@ -11,13 +11,13 @@ module.exports = function validateUpdateReviewInput(data) {
   data.approved = !isEmpty(data.approved) ? data.approved : '';
 
   if (!Validator.isEmpty(data.rating)) {
-    if (!Validator.isInt(data.rating, {gt: 0, lt: 6})) {
+    if (!Validator.isInt(data.rating, { gt: 0, lt: 6 })) {
       errors.rating = 'rating must be within range 1-5';
     }
   }
 
   if (!Validator.isEmpty(data.description)) {
-    if (!Validator.isLength(data.description, {min: 10, max: undefined})) {
+    if (!Validator.isLength(data.description, { min: 10, max: undefined })) {
       errors.description = 'description must be at least 10 characters';
     }
   }
@@ -28,5 +28,5 @@ module.exports = function validateUpdateReviewInput(data) {
     }
   }
 
-  return {errors, isValid: isEmpty(errors)};
+  return { errors, isValid: isEmpty(errors) };
 };

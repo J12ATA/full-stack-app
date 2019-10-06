@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-param-reassign */
 
 const Validator = require('validator');
 const isEmpty = require('is-empty');
@@ -33,7 +33,7 @@ module.exports = function validateAddUserInput(data) {
     }
   }
 
-  if (!Validator.isLength(data.password, {min: 6, max: 30})) {
+  if (!Validator.isLength(data.password, { min: 6, max: 30 })) {
     errors.password = 'password must be at least 6 characters';
   }
 
@@ -44,5 +44,5 @@ module.exports = function validateAddUserInput(data) {
     }
   }
 
-  return {errors, isValid: isEmpty(errors)};
+  return { errors, isValid: isEmpty(errors) };
 };

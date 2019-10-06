@@ -1,4 +1,4 @@
-'use strict';
+/* eslint-disable no-param-reassign */
 
 const Validator = require('validator');
 const isEmpty = require('is-empty');
@@ -19,5 +19,5 @@ module.exports = function validateLoginInput(data) {
     errors.password = 'password field is required';
   }
 
-  return {errors, isValid: isEmpty(errors)};
+  return { errors, isValid: isEmpty(errors) };
 };
