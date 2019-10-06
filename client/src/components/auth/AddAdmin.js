@@ -1,34 +1,48 @@
 import React, { Component } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { withRouter } from "react-router";
 import { addAdmin } from "../../actions/authActions";
+import { setActiveNav } from "../../actions/navActions";
+import { setNavTitle } from "../../actions/titleActions";
 import classnames from "classnames";
 
 class AddAdmin extends Component {
-  constructor() {
-    super();
-    this.state = {
-      name: "",
-      email: "",
-      password: "",
-      password2: "",
-      errors: {}
-    };
-  }
+  state = {
+    name: "",
+    email: "",
+    password: "",
+    password2: "",
+    errors: {}
+  };
 
   componentDidMount() {
     if (
       this.props.auth.isAuthenticated &&
       localStorage.tokenOwner === "Admin"
     ) {
+      this.props.setActiveNav("Dashboard");
+      this.props.setNavTitle("Dashboard");
       this.props.history.push("/dashboard");
     }
   }
 
-  componentDidUpdate(nextProps) {
-    if (Object.entries(nextProps.errors).length) {
-      this.setState({ errors: nextProps.errors });
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.auth.isAuthenticated !== this.props.auth.isAuthenticated &&
+      localStorage.tokenOwner === "Admin"
+    ) {
+      this.props.setActiveNav("Dashboard");
+      this.props.setNavTitle("Dashboard");
+      this.props.history.push("/dashboard");
+    }
+
+    if (
+      Object.entries(prevProps.errors).length !==
+      Object.entries(this.props.errors).length
+    ) {
+      this.setState({ errors: this.props.errors });
     }
   }
 
@@ -39,14 +53,14 @@ class AddAdmin extends Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const newAdmin = {
+    const adminData = {
       name: this.state.name,
       email: this.state.email,
       password: this.state.password,
       password2: this.state.password2
     };
 
-    this.props.addAdmin(newAdmin, this.props.history);
+    this.props.addAdmin(adminData, this.props.history);
   };
 
   render() {
@@ -62,7 +76,7 @@ class AddAdmin extends Component {
             </Link>
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
               <h4>
-                <b>Add Admin</b>
+                <b>Register</b>
               </h4>
               <p className="grey-text text-darken-1">
                 Already have an Admin account?{" "}
@@ -159,7 +173,15 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(
-  mapStateToProps,
-  { addAdmin }
-)(withRouter(AddAdmin));
+const mapDispatchToProps = {
+  addAdmin,
+  setActiveNav,
+  setNavTitle
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(AddAdmin)
+);

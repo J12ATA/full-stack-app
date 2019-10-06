@@ -1,32 +1,45 @@
 import React, { Component } from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
+import { withRouter } from "react-router";
 import { addUser } from "../../actions/authActions";
+import { setActiveNav } from "../../actions/navActions";
+import { setNavTitle } from "../../actions/titleActions";
 import classnames from "classnames";
 
 class AddUser extends Component {
-  constructor() {
-    super();
-    this.state = {
-      name: "",
-      email: "",
-      password: "",
-      password2: "",
-      errors: {}
-    };
-  }
+  state = {
+    name: "",
+    email: "",
+    password: "",
+    password2: "",
+    errors: {}
+  };
 
   componentDidMount() {
-    // If logged in and user navigates to Register page, should redirect them to user_dashboard
     if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
-      this.props.history.push("/user_dashboard");
+      this.props.setActiveNav("Products");
+      this.props.setNavTitle("Products");
+      this.props.history.push("/products");
     }
   }
 
-  componentDidUpdate(nextProps) {
-    if (Object.entries(nextProps.errors).length) {
-      this.setState({ errors: nextProps.errors });
+  componentDidUpdate(prevProps) {
+    if (
+      prevProps.auth.isAuthenticated !== this.props.auth.isAuthenticated &&
+      localStorage.tokenOwner === "User"
+    ) {
+      this.props.setActiveNav("Products");
+      this.props.setNavTitle("Products");
+      this.props.history.push("/products");
+    }
+
+    if (
+      Object.entries(prevProps.errors).length !==
+      Object.entries(this.props.errors).length
+    ) {
+      this.setState({ errors: this.props.errors });
     }
   }
 
@@ -37,14 +50,14 @@ class AddUser extends Component {
   onSubmit = e => {
     e.preventDefault();
 
-    const newUser = {
+    const userData = {
       name: this.state.name,
       email: this.state.email,
       password: this.state.password,
       password2: this.state.password2
     };
 
-    this.props.addUser(newUser, this.props.history);
+    this.props.addUser(userData, this.props.history);
   };
 
   render() {
@@ -60,7 +73,7 @@ class AddUser extends Component {
             </Link>
             <div className="col s12" style={{ paddingLeft: "11.250px" }}>
               <h4>
-                <b>Add User</b>
+                <b>Register</b>
               </h4>
               <p className="grey-text text-darken-1">
                 Already have a User account?{" "}
@@ -157,7 +170,15 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(
-  mapStateToProps,
-  { addUser }
-)(withRouter(AddUser));
+const mapDispatchToProps = {
+  addUser,
+  setActiveNav,
+  setNavTitle
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )(AddUser)
+);
