@@ -18,9 +18,7 @@ export const createNewUser = user => {
 export const updateUser = user => {
   return axios.put(`${BASE_URL}/users/${user.id}`, {
     name: user.name,
-    email: user.email,
-    password: user.password,
-    password2: user.password2
+    email: user.email
   });
 };
 
