@@ -1,6 +1,6 @@
-import axios from "axios";
-import setAuthToken from "../utils/setAuthToken";
-import jwt_decode from "jwt-decode";
+import axios from 'axios';
+import setAuthToken from '../utils/setAuthToken';
+import jwt_decode from 'jwt-decode';
 
 import {
   GET_ERRORS,
@@ -8,21 +8,21 @@ import {
   SET_CURRENT_ADMIN,
   SET_CURRENT_USER,
   TOGGLE_LOGIN
-} from "./types";
+} from './types';
 
-const BASE_URL = "/api";
+const BASE_URL = '/api';
 
 export const addAdmin = (userData, history) => dispatch => {
   axios
     .post(`${BASE_URL}/admin/add_admin`, userData)
-    .then(res => history.push("/login_admin"))
+    .then(res => history.push('/login_admin'))
     .catch(err => dispatch(getErrors(err)));
 };
 
 export const addUser = (userData, history) => dispatch => {
   axios
     .post(`${BASE_URL}/users/add_user`, userData)
-    .then(res => history.push("/login_user"))
+    .then(res => history.push('/login_user'))
     .catch(err => dispatch(getErrors(err)));
 };
 
@@ -31,8 +31,8 @@ export const loginAdmin = userData => dispatch => {
     .post(`${BASE_URL}/admin/login_admin`, userData)
     .then(res => {
       const { token } = res.data;
-      localStorage.setItem("jwtToken", token);
-      localStorage.setItem("tokenOwner", "Admin");
+      localStorage.setItem('jwtToken', token);
+      localStorage.setItem('tokenOwner', 'Admin');
       setAuthToken(token);
       const decoded = jwt_decode(token);
       dispatch(setCurrentAdmin(decoded));
@@ -47,8 +47,8 @@ export const loginUser = loginData => dispatch => {
     .then(res => {
       const { token } = res.data;
       const decoded = jwt_decode(token);
-      localStorage.setItem("jwtToken", token);
-      localStorage.setItem("tokenOwner", "User");
+      localStorage.setItem('jwtToken', token);
+      localStorage.setItem('tokenOwner', 'User');
       setAuthToken(token);
       dispatch(setCurrentUser(decoded));
     })
@@ -56,10 +56,10 @@ export const loginUser = loginData => dispatch => {
 };
 
 export const logout = tokenOwner => dispatch => {
-  localStorage.removeItem("jwtToken");
-  localStorage.removeItem("tokenOwner");
+  localStorage.removeItem('jwtToken');
+  localStorage.removeItem('tokenOwner');
   setAuthToken(false);
-  tokenOwner === "Admin"
+  tokenOwner === 'Admin'
     ? dispatch(setCurrentAdmin({}))
     : dispatch(setCurrentUser({}));
 };

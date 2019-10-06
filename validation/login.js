@@ -1,23 +1,23 @@
-"use strict"
+'use strict';
 
-const Validator = require("validator");
-const isEmpty = require("is-empty");
+const Validator = require('validator');
+const isEmpty = require('is-empty');
 
 module.exports = function validateLoginInput(data) {
-  let errors = {};
+  const errors = {};
 
-  data.email = !isEmpty(data.email) ? data.email : "";
-  data.password = !isEmpty(data.password) ? data.password : "";
+  data.email = !isEmpty(data.email) ? data.email : '';
+  data.password = !isEmpty(data.password) ? data.password : '';
 
   if (Validator.isEmpty(data.email)) {
-    errors.email = "email field is required";
+    errors.email = 'email field is required';
   } else if (!Validator.isEmail(data.email)) {
-    errors.email = "email is invalid";
+    errors.email = 'email is invalid';
   }
 
   if (Validator.isEmpty(data.password)) {
-    errors.password = "password field is required";
+    errors.password = 'password field is required';
   }
 
-  return { errors, isValid: isEmpty(errors) };
+  return {errors, isValid: isEmpty(errors)};
 };

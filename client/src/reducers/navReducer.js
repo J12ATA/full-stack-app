@@ -1,7 +1,7 @@
-import { SET_ACTIVE_NAV } from "../actions/types";
+import { SET_ACTIVE_NAV } from '../actions/types';
 
 const initialState = {
-  navItem: ""
+  navItem: ''
 };
 
 export default (state = initialState, action) => {

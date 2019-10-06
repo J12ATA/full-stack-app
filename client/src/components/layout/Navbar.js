@@ -1,47 +1,47 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withRouter } from "react-router";
-import PropTypes from "prop-types";
-import LoginDialog from "../auth/LoginDialog";
-import { logout, setToggleLogin } from "../../actions/authActions";
-import { setNavTitle } from "../../actions/titleActions";
-import { setActiveNav } from "../../actions/navActions";
-import MaterialIcon from "@material/react-material-icon";
+import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import PropTypes from 'prop-types';
+import LoginDialog from '../auth/LoginDialog';
+import { logout, setToggleLogin } from '../../actions/authActions';
+import { setNavTitle } from '../../actions/titleActions';
+import { setActiveNav } from '../../actions/navActions';
+import MaterialIcon from '@material/react-material-icon';
 import Drawer, {
   DrawerAppContent,
   DrawerContent,
   DrawerHeader,
   DrawerTitle
-} from "@material/react-drawer";
+} from '@material/react-drawer';
 import List, {
   ListItem,
   ListDivider,
   ListItemGraphic,
   ListItemText
-} from "@material/react-list";
+} from '@material/react-list';
 import TopAppBar, {
   TopAppBarFixedAdjust,
   TopAppBarIcon,
   TopAppBarRow,
   TopAppBarSection,
   TopAppBarTitle
-} from "@material/react-top-app-bar";
+} from '@material/react-top-app-bar';
 
 const startList = [
   {
-    name: "Products",
-    graphic: { iconName: "shopping_cart", label: "products" }
+    name: 'Products',
+    graphic: { iconName: 'shopping_cart', label: 'products' }
   },
   {
-    name: "Users",
-    graphic: { iconName: "people", label: "users" }
+    name: 'Users',
+    graphic: { iconName: 'people', label: 'users' }
   }
 ];
 
 const endList = [
   {
-    name: "Logout",
-    graphic: { iconName: "exit_to_app", label: "logout" }
+    name: 'Logout',
+    graphic: { iconName: 'exit_to_app', label: 'logout' }
   }
 ];
 
@@ -50,8 +50,8 @@ const USER_NAVBAR_LIST = [...startList, ...endList];
 const ADMIN_NAVBAR_LIST = [
   ...startList,
   {
-    name: "Dashboard",
-    graphic: { iconName: "dashboard", label: "dashboard" }
+    name: 'Dashboard',
+    graphic: { iconName: 'dashboard', label: 'dashboard' }
   },
   ...endList
 ];
@@ -59,8 +59,8 @@ const ADMIN_NAVBAR_LIST = [
 const NAVBAR_LIST = [
   ...startList,
   {
-    name: "Login",
-    graphic: { iconName: "vpn_key", label: "login" }
+    name: 'Login',
+    graphic: { iconName: 'vpn_key', label: 'login' }
   }
 ];
 
@@ -75,7 +75,7 @@ class Navbar extends Component {
 
   handleNavTitle = name => {
     if (name) this.props.setActiveNav(name);
-    this.props.setNavTitle(name || "Welcome");
+    this.props.setNavTitle(name || 'Welcome');
   };
 
   onDrawerClose = () => {
@@ -88,15 +88,15 @@ class Navbar extends Component {
 
   onNavBarItemClick = name => {
     switch (name) {
-      case "Products":
+      case 'Products':
         return this.onProductsClick();
-      case "Users":
+      case 'Users':
         return this.onUsersClick();
-      case "Dashboard":
+      case 'Dashboard':
         return this.onDashboardClick();
-      case "Logout":
+      case 'Logout':
         return this.onLogoutClick();
-      case "Login":
+      case 'Login':
         return this.onLoginClick();
       default:
         return this.onDrawerClose();
@@ -104,17 +104,17 @@ class Navbar extends Component {
   };
 
   onProductsClick = () => {
-    this.props.history.push("/products");
+    this.props.history.push('/products');
     this.onDrawerClose();
   };
 
   onUsersClick = () => {
-    this.props.history.push("/users");
+    this.props.history.push('/users');
     this.onDrawerClose();
   };
 
   onDashboardClick = () => {
-    this.props.history.push("/dashboard");
+    this.props.history.push('/dashboard');
     this.onDrawerClose();
   };
 
@@ -129,9 +129,9 @@ class Navbar extends Component {
 
   onLogoutClick = () => {
     this.props.logout(localStorage.tokenOwner);
-    this.props.setActiveNav("");
-    this.props.setNavTitle("Welcome");
-    this.props.history.push("/");
+    this.props.setActiveNav('');
+    this.props.setNavTitle('Welcome');
+    this.props.history.push('/');
     this.onDrawerClose();
   };
 
@@ -152,7 +152,7 @@ class Navbar extends Component {
       navList = NAVBAR_LIST;
     } else {
       navList =
-        localStorage.tokenOwner === "User"
+        localStorage.tokenOwner === 'User'
           ? USER_NAVBAR_LIST
           : ADMIN_NAVBAR_LIST;
     }
@@ -162,7 +162,7 @@ class Navbar extends Component {
         <Drawer modal open={isDrawerOpen} onClose={onDrawerClose}>
           <DrawerHeader>
             <DrawerTitle tag="h2">
-              {admin.name || user.name || "MENU"}
+              {admin.name || user.name || 'MENU'}
             </DrawerTitle>
           </DrawerHeader>
           <DrawerContent>
@@ -174,7 +174,7 @@ class Navbar extends Component {
                   <ListItem
                     key={name}
                     onClick={() => {
-                      if (name !== "Login" && name !== "Logout")
+                      if (name !== 'Login' && name !== 'Logout')
                         handleNavTitle(name);
                       onNavBarItemClick(name);
                     }}

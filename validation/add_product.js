@@ -1,32 +1,34 @@
-"use strict"
+'use strict';
 
-const Validator = require("validator");
-const isEmpty = require("is-empty");
+const Validator = require('validator');
+const isEmpty = require('is-empty');
 
 module.exports = function validateAddProductInput(data) {
-  let errors = {};
+  const errors = {};
 
-  data.name = !isEmpty(data.name) ? data.name : "";
-  data.description = !isEmpty(data.description) ? data.description : "";
-  data.price = !isEmpty(data.price) ? data.price : "";
+  data.name = !isEmpty(data.name) ? data.name : '';
+  data.description = !isEmpty(data.description) ? data.description : '';
+  data.price = !isEmpty(data.price) ? data.price : '';
 
   if (Validator.isEmpty(data.name)) {
-    errors.name = "name field is required";
+    errors.name = 'name field is required';
   }
 
   if (Validator.isEmpty(data.description)) {
-    errors.description = "description field is required";
-  } else if (!Validator.isLength(data.description, { min: 10, max: undefined })) {
-    errors.description = "description must be at least 10 characters";
+    errors.description = 'description field is required';
+  } else if (
+    !Validator.isLength(data.description, {min: 10, max: undefined})
+  ) {
+    errors.description = 'description must be at least 10 characters';
   }
 
   if (Validator.isEmpty(data.price)) {
-    errors.price = "price field is required";
+    errors.price = 'price field is required';
   } else {
     if (!Validator.isCurrency(data.price)) {
-      errors.price = "valid price format: $2.99";
+      errors.price = 'valid price format: $2.99';
     }
   }
 
-  return { errors, isValid: isEmpty(errors) };
+  return {errors, isValid: isEmpty(errors)};
 };

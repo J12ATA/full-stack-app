@@ -1,38 +1,38 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { withRouter } from "react-router";
-import { loginUser, logout } from "../../actions/authActions";
-import { setActiveNav } from "../../actions/navActions";
-import { setNavTitle } from "../../actions/titleActions";
-import TextField, { HelperText, Input } from "@material/react-text-field";
-import Button from "@material/react-button";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { loginUser, logout } from '../../actions/authActions';
+import { setActiveNav } from '../../actions/navActions';
+import { setNavTitle } from '../../actions/titleActions';
+import TextField, { HelperText, Input } from '@material/react-text-field';
+import Button from '@material/react-button';
 
 class LoginUser extends Component {
   state = {
-    email: "",
-    password: "",
+    email: '',
+    password: '',
     errors: {}
   };
 
   componentDidMount() {
-    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
-      this.props.setActiveNav("Products");
-      this.props.setNavTitle("Products");
-      this.props.history.push("/products");
+    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === 'User') {
+      this.props.setActiveNav('Products');
+      this.props.setNavTitle('Products');
+      this.props.history.push('/products');
     } else if (!this.props.auth.isAuthenticated && localStorage.tokenOwner) {
       this.props.logout(localStorage.tokenOwner);
     }
 
-    this.props.setActiveNav("");
-    this.props.setNavTitle("Welcome");
+    this.props.setActiveNav('');
+    this.props.setNavTitle('Welcome');
   }
 
   componentDidUpdate(prevProps) {
-    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === "User") {
-      this.props.setActiveNav("Products");
-      this.props.setNavTitle("Products");
-      this.props.history.push("/products");
+    if (this.props.auth.isAuthenticated && localStorage.tokenOwner === 'User') {
+      this.props.setActiveNav('Products');
+      this.props.setNavTitle('Products');
+      this.props.history.push('/products');
     }
 
     if (!Object.is(prevProps.errors, this.props.errors)) {
@@ -74,7 +74,7 @@ class LoginUser extends Component {
                   onChange={onChange}
                   id="email"
                   type="email"
-                  isValid={!errors.hasOwnProperty("email")}
+                  isValid={!errors.hasOwnProperty('email')}
                 />
               </TextField>
             </div>
@@ -88,7 +88,7 @@ class LoginUser extends Component {
                   onChange={onChange}
                   id="password"
                   type="password"
-                  isValid={!errors.hasOwnProperty("password")}
+                  isValid={!errors.hasOwnProperty('password')}
                 />
               </TextField>
             </div>

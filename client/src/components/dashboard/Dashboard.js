@@ -1,24 +1,24 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { userData } from "../../actions/userActions";
-import { createNewUser, deleteUser, updateUser } from "../../utils/api";
-import MaterialTable from "material-table";
-import LoadingDashboard from "./loadingDashboard";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { userData } from '../../actions/userActions';
+import { createNewUser, deleteUser, updateUser } from '../../utils/api';
+import MaterialTable from 'material-table';
+import LoadingDashboard from './loadingDashboard';
 
 class AdminDashboard extends Component {
   state = {
     columns: [
-      { title: "Name", field: "name" },
-      { title: "Email", field: "email" },
+      { title: 'Name', field: 'name' },
+      { title: 'Email', field: 'email' },
       {
-        title: "Reviews",
-        field: "reviewCount",
-        editable: "never",
+        title: 'Reviews',
+        field: 'reviewCount',
+        editable: 'never',
         hidden: false
       },
-      { title: "Password", field: "password", hidden: true },
-      { title: "Confirm Password", field: "password2", hidden: true }
+      { title: 'Password', field: 'password', hidden: true },
+      { title: 'Confirm Password', field: 'password2', hidden: true }
     ]
   };
 
@@ -88,7 +88,7 @@ class AdminDashboard extends Component {
             emptyRowsWhenPaging: false
           }}
           localization={{
-            body: { editRow: { deleteText: "Delete this user?" } }
+            body: { editRow: { deleteText: 'Delete this user?' } }
           }}
           tableRef={props => {
             if (props && this.state.modifiedHook !== true) {

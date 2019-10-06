@@ -1,4 +1,4 @@
-import { SET_USER_DATA } from "../actions/types";
+import { SET_USER_DATA } from '../actions/types';
 
 const initialState = {
   users: []

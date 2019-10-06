@@ -1,6 +1,6 @@
 const mongooseConfig = {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 };
 
 module.exports = mongooseConfig;

@@ -1,6 +1,6 @@
-import { SET_USER_DATA } from "./types";
-import { getAllUserData } from "../utils/api";
-import { getErrors } from "../actions/authActions";
+import { SET_USER_DATA } from './types';
+import { getAllUserData } from '../utils/api';
+import { getErrors } from '../actions/authActions';
 
 // async action creator
 export const userData = () => async dispatch => {

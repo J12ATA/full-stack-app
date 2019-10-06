@@ -1,7 +1,7 @@
-import { SET_NAV_TITLE } from "../actions/types";
+import { SET_NAV_TITLE } from '../actions/types';
 
 const initialState = {
-  title: "Welcome"
+  title: 'Welcome'
 };
 
 export default (state = initialState, action) => {

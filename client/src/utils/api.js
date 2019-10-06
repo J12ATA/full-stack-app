@@ -1,5 +1,5 @@
-import axios from "axios";
-const BASE_URL = "/api";
+import axios from 'axios';
+const BASE_URL = '/api';
 
 export const getAllUserData = async () => {
   const response = await axios.get(`${BASE_URL}/users/get_all_users`);

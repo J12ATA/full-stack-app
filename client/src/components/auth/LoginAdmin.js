@@ -1,44 +1,44 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { connect } from "react-redux";
-import { withRouter } from "react-router";
-import { loginAdmin, logout } from "../../actions/authActions";
-import { setActiveNav } from "../../actions/navActions";
-import { setNavTitle } from "../../actions/titleActions";
-import TextField, { HelperText, Input } from "@material/react-text-field";
-import Button from "@material/react-button";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
+import { loginAdmin, logout } from '../../actions/authActions';
+import { setActiveNav } from '../../actions/navActions';
+import { setNavTitle } from '../../actions/titleActions';
+import TextField, { HelperText, Input } from '@material/react-text-field';
+import Button from '@material/react-button';
 
 class LoginAdmin extends Component {
   state = {
-    email: "",
-    password: "",
+    email: '',
+    password: '',
     errors: {}
   };
 
   componentDidMount() {
     if (
       this.props.auth.isAuthenticated &&
-      localStorage.tokenOwner === "Admin"
+      localStorage.tokenOwner === 'Admin'
     ) {
-      this.props.setActiveNav("Dashboard");
-      this.props.setNavTitle("Dashboard");
-      this.props.history.push("/dashboard");
+      this.props.setActiveNav('Dashboard');
+      this.props.setNavTitle('Dashboard');
+      this.props.history.push('/dashboard');
     } else if (!this.props.auth.isAuthenticated && localStorage.tokenOwner) {
       this.props.logout(localStorage.tokenOwner);
     }
 
-    this.props.setActiveNav("");
-    this.props.setNavTitle("Welcome");
+    this.props.setActiveNav('');
+    this.props.setNavTitle('Welcome');
   }
 
   componentDidUpdate(prevProps) {
     if (
       this.props.auth.isAuthenticated &&
-      localStorage.tokenOwner === "Admin"
+      localStorage.tokenOwner === 'Admin'
     ) {
-      this.props.setActiveNav("Dashboard");
-      this.props.setNavTitle("Dashboard");
-      this.props.history.push("/dashboard");
+      this.props.setActiveNav('Dashboard');
+      this.props.setNavTitle('Dashboard');
+      this.props.history.push('/dashboard');
     }
 
     if (!Object.is(prevProps.errors, this.props.errors)) {
@@ -80,7 +80,7 @@ class LoginAdmin extends Component {
                   onChange={onChange}
                   id="email"
                   type="email"
-                  isValid={!errors.hasOwnProperty("email")}
+                  isValid={!errors.hasOwnProperty('email')}
                 />
               </TextField>
             </div>
@@ -94,7 +94,7 @@ class LoginAdmin extends Component {
                   onChange={onChange}
                   id="password"
                   type="password"
-                  isValid={!errors.hasOwnProperty("password")}
+                  isValid={!errors.hasOwnProperty('password')}
                 />
               </TextField>
             </div>

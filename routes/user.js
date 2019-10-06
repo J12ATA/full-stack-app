@@ -1,27 +1,35 @@
-'use strict'
+'use strict';
 
-const express = require("express");
+const express = require('express');
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 // Load productController and destructure it's methods
-const { add_user, login_user, get_all_users, get_user, update_user, delete_user } = require("../controllers/userController");
+const {
+  addUser,
+  loginUser,
+  getAllUsers,
+  getUser,
+  updateUser,
+  deleteUser,
+} = require('../controllers/userController');
 
 // @route POST api/users/add_user
-router.post("/add_user", add_user);
+router.post('/add_user', addUser);
 
 // @route POST api/users/login_user
-router.post("/login_user", login_user);
+router.post('/login_user', loginUser);
 
 // @route GET api/users/get_all_users
-router.get("/get_all_users", get_all_users);
+router.get('/get_all_users', getAllUsers);
 
 // @route GET api/users/:_id
-router.get("/:_id", get_user);
+router.get('/:_id', getUser);
 
 // @route PUT api/users/:_id
-router.put("/:_id", update_user);
+router.put('/:_id', updateUser);
 
 // @route DELETE api/users/:_id
-router.delete("/:_id", delete_user);
+router.delete('/:_id', deleteUser);
 
 module.exports = router;

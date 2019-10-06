@@ -2,9 +2,9 @@ import {
   SET_CURRENT_ADMIN,
   SET_CURRENT_USER,
   TOGGLE_LOGIN
-} from "../actions/types";
+} from '../actions/types';
 
-const isEmpty = require("is-empty");
+const isEmpty = require('is-empty');
 
 const initialState = {
   isAuthenticated: false,
