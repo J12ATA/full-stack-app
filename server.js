@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
+const helmet = require("helmet");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
@@ -15,6 +16,8 @@ const app = express();
 const path = require("path");
 
 mongoose.set("useFindAndModify", false);
+
+app.use(helmet());
 
 app.use(express.static(path.join(__dirname, "client", "build")));
 
