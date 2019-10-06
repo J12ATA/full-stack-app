@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { withRouter } from "react-router";
 import { addAdmin } from "../../actions/authActions";
 import { setActiveNav } from "../../actions/navActions";
 import { setNavTitle } from "../../actions/titleActions";
-import classnames from "classnames";
+import TextField, { HelperText, Input } from "@material/react-text-field";
+import Button from "@material/react-button";
 
 class AddAdmin extends Component {
   state = {
@@ -25,7 +25,12 @@ class AddAdmin extends Component {
       this.props.setActiveNav("Dashboard");
       this.props.setNavTitle("Dashboard");
       this.props.history.push("/dashboard");
+    } else if (!this.props.auth.isAuthenticated && localStorage.tokenOwner) {
+      this.props.logout(localStorage.tokenOwner);
     }
+
+    this.props.setActiveNav("");
+    this.props.setNavTitle("Welcome");
   }
 
   componentDidUpdate(prevProps) {
@@ -38,10 +43,7 @@ class AddAdmin extends Component {
       this.props.history.push("/dashboard");
     }
 
-    if (
-      Object.entries(prevProps.errors).length !==
-      Object.entries(this.props.errors).length
-    ) {
+    if (!Object.is(prevProps.errors, this.props.errors)) {
       this.setState({ errors: this.props.errors });
     }
   }
@@ -64,98 +66,74 @@ class AddAdmin extends Component {
   };
 
   render() {
-    const { errors } = this.state;
+    const { errors, password, password2, email, name } = this.state;
+    const { onSubmit, onChange } = this;
 
     return (
-      <div className="container">
-        <div className="row">
-          <div className="col s8 offset-s2">
-            <Link to="/" className="btn-flat waves-effect">
-              <i className="material-icons left">keyboard_backspace</i>
-              Back to Home
-            </Link>
-            <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-              <h4>
-                <b>Register</b>
-              </h4>
-              <p className="grey-text text-darken-1">
-                Already have an Admin account?{" "}
-                <Link to="/login_admin">Log in</Link>
-              </p>
-            </div>
-            <form noValidate onSubmit={this.onSubmit}>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.name}
-                  error={errors.name}
+      <div>
+        <div>
+          <h3>Admin</h3>
+          <form noValidate onSubmit={onSubmit}>
+            <div>
+              <TextField
+                label="Name"
+                helperText={<HelperText>{errors.name}</HelperText>}
+              >
+                <Input
+                  value={name}
+                  onChange={onChange}
                   id="name"
                   type="text"
-                  className={classnames("", {
-                    invalid: errors.name
-                  })}
+                  isValid={!errors.hasOwnProperty("name")}
                 />
-                <label htmlFor="name">Name</label>
-                <span className="red-text">{errors.name}</span>
-              </div>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.email}
-                  error={errors.email}
+              </TextField>
+            </div>
+            <div>
+              <TextField
+                label="Email"
+                helperText={<HelperText>{errors.email}</HelperText>}
+              >
+                <Input
+                  value={email}
+                  onChange={onChange}
                   id="email"
                   type="email"
-                  className={classnames("", {
-                    invalid: errors.email
-                  })}
+                  isValid={!errors.hasOwnProperty("email")}
                 />
-                <label htmlFor="email">Email</label>
-                <span className="red-text">{errors.email}</span>
-              </div>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.password}
-                  error={errors.password}
+              </TextField>
+            </div>
+            <div>
+              <TextField
+                label="Password"
+                helperText={<HelperText>{errors.password}</HelperText>}
+              >
+                <Input
+                  value={password}
+                  onChange={onChange}
                   id="password"
                   type="password"
-                  className={classnames("", {
-                    invalid: errors.password
-                  })}
+                  isValid={!errors.hasOwnProperty("password")}
                 />
-                <label htmlFor="password">Password</label>
-                <span className="red-text">{errors.password}</span>
-              </div>
-              <div className="input-field col s12">
-                <input
-                  onChange={this.onChange}
-                  value={this.state.password2}
-                  error={errors.password2}
+              </TextField>
+            </div>
+            <div>
+              <TextField
+                label="Confirm Password"
+                helperText={<HelperText>{errors.password2}</HelperText>}
+              >
+                <Input
+                  value={password2}
+                  onChange={onChange}
                   id="password2"
                   type="password"
-                  className={classnames("", {
-                    invalid: errors.password2
-                  })}
+                  isValid={!errors.hasOwnProperty("password2")}
                 />
-                <label htmlFor="password2">Confirm Password</label>
-                <span className="red-text">{errors.password2}</span>
-              </div>
-              <div className="col s12" style={{ paddingLeft: "11.250px" }}>
-                <button
-                  style={{
-                    width: "150px",
-                    borderRadius: "3px",
-                    letterSpacing: "1.5px",
-                    marginTop: "1rem"
-                  }}
-                  type="submit"
-                  className="btn btn-large waves-effect waves-light hoverable blue accent-3"
-                >
-                  Sign up
-                </button>
-              </div>
-            </form>
-          </div>
+              </TextField>
+            </div>
+            <div>
+              <Button raised>Register</Button>
+            </div>
+          </form>
         </div>
       </div>
     );
