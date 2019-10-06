@@ -20,7 +20,7 @@ export const getLoginData = (loginData) => ({
 
 export const getErrors = (err) => ({
   type: GET_ERRORS,
-  errors: err,
+  errors: err.response.data,
 });
 
 export const setCurrentAdmin = (decoded) => ({
