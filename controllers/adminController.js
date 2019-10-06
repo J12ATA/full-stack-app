@@ -13,7 +13,6 @@ const Admin = require("../models/Admin");
 
 exports.add_admin = async (req, res, next) => {
   const input = req.body;
-
   const { errors, isValid } = validateAddAdminInput(input);
 
   if (!isValid) {
