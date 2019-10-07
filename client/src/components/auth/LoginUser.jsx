@@ -75,43 +75,41 @@ class LoginUser extends Component {
     const { onSubmit, onChange } = this;
 
     return (
-      <div>
-        <div>
-          <h3>User</h3>
-          <form noValidate onSubmit={onSubmit}>
-            <div>
-              <TextField
-                label="Email"
-                helperText={<HelperText>{errors.email}</HelperText>}
-              >
-                <Input
-                  value={email}
-                  onChange={onChange}
-                  id="email"
-                  type="email"
-                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'email')}
-                />
-              </TextField>
-            </div>
-            <div>
-              <TextField
-                label="Password"
-                helperText={<HelperText>{errors.password}</HelperText>}
-              >
-                <Input
-                  value={password}
-                  onChange={onChange}
-                  id="password"
-                  type="password"
-                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'password')}
-                />
-              </TextField>
-            </div>
-            <div>
-              <Button raised>Login</Button>
-            </div>
-          </form>
-        </div>
+      <div className="login-container">
+        <h3>User</h3>
+        <form noValidate onSubmit={onSubmit}>
+          <div>
+            <TextField
+              label="Email"
+              helperText={<HelperText>{errors.email}</HelperText>}
+            >
+              <Input
+                value={email}
+                onChange={onChange}
+                id="email"
+                type="email"
+                isValid={!Object.prototype.hasOwnProperty.call(errors, 'email')}
+              />
+            </TextField>
+          </div>
+          <div>
+            <TextField
+              label="Password"
+              helperText={<HelperText>{errors.password}</HelperText>}
+            >
+              <Input
+                value={password}
+                onChange={onChange}
+                id="password"
+                type="password"
+                isValid={!Object.prototype.hasOwnProperty.call(errors, 'password')}
+              />
+            </TextField>
+          </div>
+          <div>
+            <Button raised>Login</Button>
+          </div>
+        </form>
       </div>
     );
   }

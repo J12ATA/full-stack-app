@@ -83,71 +83,69 @@ class AddAdmin extends Component {
     const { onSubmit, onChange } = this;
 
     return (
-      <div>
-        <div>
-          <h3>Admin</h3>
-          <form noValidate onSubmit={onSubmit}>
-            <div>
-              <TextField
-                label="Name"
-                helperText={<HelperText>{errors.name}</HelperText>}
-              >
-                <Input
-                  value={name}
-                  onChange={onChange}
-                  id="name"
-                  type="text"
-                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'name')}
-                />
-              </TextField>
-            </div>
-            <div>
-              <TextField
-                label="Email"
-                helperText={<HelperText>{errors.email}</HelperText>}
-              >
-                <Input
-                  value={email}
-                  onChange={onChange}
-                  id="email"
-                  type="email"
-                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'email')}
-                />
-              </TextField>
-            </div>
-            <div>
-              <TextField
-                label="Password"
-                helperText={<HelperText>{errors.password}</HelperText>}
-              >
-                <Input
-                  value={password}
-                  onChange={onChange}
-                  id="password"
-                  type="password"
-                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'password')}
-                />
-              </TextField>
-            </div>
-            <div>
-              <TextField
-                label="Confirm Password"
-                helperText={<HelperText>{errors.password2}</HelperText>}
-              >
-                <Input
-                  value={password2}
-                  onChange={onChange}
-                  id="password2"
-                  type="password"
-                  isValid={!Object.prototype.hasOwnProperty.call(errors, 'password2')}
-                />
-              </TextField>
-            </div>
-            <div>
-              <Button raised>Register</Button>
-            </div>
-          </form>
-        </div>
+      <div className="login-container">
+        <h3>Admin</h3>
+        <form noValidate onSubmit={onSubmit}>
+          <div>
+            <TextField
+              label="Name"
+              helperText={<HelperText>{errors.name}</HelperText>}
+            >
+              <Input
+                value={name}
+                onChange={onChange}
+                id="name"
+                type="text"
+                isValid={!Object.prototype.hasOwnProperty.call(errors, 'name')}
+              />
+            </TextField>
+          </div>
+          <div>
+            <TextField
+              label="Email"
+              helperText={<HelperText>{errors.email}</HelperText>}
+            >
+              <Input
+                value={email}
+                onChange={onChange}
+                id="email"
+                type="email"
+                isValid={!Object.prototype.hasOwnProperty.call(errors, 'email')}
+              />
+            </TextField>
+          </div>
+          <div>
+            <TextField
+              label="Password"
+              helperText={<HelperText>{errors.password}</HelperText>}
+            >
+              <Input
+                value={password}
+                onChange={onChange}
+                id="password"
+                type="password"
+                isValid={!Object.prototype.hasOwnProperty.call(errors, 'password')}
+              />
+            </TextField>
+          </div>
+          <div>
+            <TextField
+              label="Confirm Password"
+              helperText={<HelperText>{errors.password2}</HelperText>}
+            >
+              <Input
+                value={password2}
+                onChange={onChange}
+                id="password2"
+                type="password"
+                isValid={!Object.prototype.hasOwnProperty.call(errors, 'password2')}
+              />
+            </TextField>
+          </div>
+          <div>
+            <Button raised>Register</Button>
+          </div>
+        </form>
       </div>
     );
   }
