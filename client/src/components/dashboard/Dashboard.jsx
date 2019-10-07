@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import MaterialTable from 'material-table';
 import { userData } from '../../actions/userActions';
 import { createNewUser, deleteUser, updateUser } from '../../utils/api';
+import setActiveNav from '../../actions/navActions';
+import setNavTitle from '../../actions/titleActions';
 
 class AdminDashboard extends Component {
   state = {
@@ -30,8 +32,10 @@ class AdminDashboard extends Component {
   };
 
   componentDidMount() {
-    const { loadUserData } = this.props;
+    const { loadUserData, activeNav, navTitle } = this.props;
 
+    activeNav('Dashboard');
+    navTitle('Dashboard');
     loadUserData();
   }
 
@@ -129,6 +133,8 @@ class AdminDashboard extends Component {
 
 AdminDashboard.propTypes = {
   loadUserData: PropTypes.func.isRequired,
+  activeNav: PropTypes.func.isRequired,
+  navTitle: PropTypes.func.isRequired,
   // eslint-disable-next-line react/forbid-prop-types
   users: PropTypes.array.isRequired,
   auth: PropTypes.shape({
@@ -160,6 +166,8 @@ const mapStateToProps = ({ users: userStore, auth }) => {
 
 const mapDispatchToProps = {
   loadUserData: userData,
+  activeNav: setActiveNav,
+  navTitle: setNavTitle,
 };
 
 export default connect(
