@@ -16,8 +16,16 @@ class AdminDashboard extends Component {
         editable: 'never',
         hidden: false,
       },
-      { title: 'Password', field: 'password', hidden: true },
-      { title: 'Confirm Password', field: 'password2', hidden: true },
+      {
+        title: 'Password',
+        field: 'password',
+        hidden: true,
+      },
+      {
+        title: 'Confirm Password',
+        field: 'password2',
+        hidden: true,
+      },
     ],
   };
 
@@ -28,19 +36,21 @@ class AdminDashboard extends Component {
   }
 
   columnsHidden = () => {
-    const columns = [...this.state];
-    columns[2].hidden = true;
-    columns[3].hidden = false;
-    columns[4].hidden = false;
-    this.setState(() => ({ columns }));
+    const { columns } = this.state;
+    const newColumns = [...columns];
+    newColumns[2].hidden = true;
+    newColumns[3].hidden = false;
+    newColumns[4].hidden = false;
+    this.setState(() => ({ columns: newColumns }));
   };
 
   columnsReset = () => {
-    const columns = [...this.state];
-    columns[2].hidden = false;
-    columns[3].hidden = true;
-    columns[4].hidden = true;
-    this.setState(() => ({ columns }));
+    const { columns } = this.state;
+    const newColumns = [...columns];
+    newColumns[2].hidden = false;
+    newColumns[3].hidden = true;
+    newColumns[4].hidden = true;
+    this.setState(() => ({ columns: newColumns }));
   };
 
   addNewUser = async (user) => {
@@ -106,7 +116,7 @@ class AdminDashboard extends Component {
               // eslint-disable-next-line no-param-reassign
               props.onEditingCanceled = (mode, editProps) => {
                 columnsReset();
-                this.setState({ error: {}, modifiedHook: true });
+                this.setState({ modifiedHook: true });
                 cancel(mode, editProps);
               };
             }
