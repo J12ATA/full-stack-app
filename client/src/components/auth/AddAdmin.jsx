@@ -142,7 +142,7 @@ class AddAdmin extends Component {
               />
             </TextField>
           </div>
-          <div>
+          <div className="register-btn">
             <Button raised>Register</Button>
           </div>
         </form>

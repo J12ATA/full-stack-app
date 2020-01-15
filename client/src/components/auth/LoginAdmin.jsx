@@ -106,7 +106,7 @@ class LoginAdmin extends Component {
               />
             </TextField>
           </div>
-          <div>
+          <div className="login-btn">
             <Button raised>Login</Button>
           </div>
         </form>

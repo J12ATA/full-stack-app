@@ -8,6 +8,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background-color: ghostwhite;
 }
 
 .landing-page,
@@ -22,8 +23,9 @@ body {
   margin: auto;
 }
 
-.login-btn {
-  width: 105.73px;
+.login-btn,
+.register-btn {
+  margin-top: 10px;
 }
 
 .wip-container {
